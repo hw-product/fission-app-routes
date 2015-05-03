@@ -1,0 +1,22 @@
+:ruby
+  id = 'routes'
+  content_for(:container) do
+    render(
+      :partial => 'layouts/panel',
+      :locals => {
+        :id => id,
+        :heading => 'Custom Routes',
+        :panel_content => render(
+          :partial => 'layouts/table',
+          :locals => {
+            :header_data => ['Routes'],
+            :data => @routes.map{|route|
+              [link_to(route.name, edit_route_path(route.id))]
+            }
+          }
+        )
+      }
+    )
+  end
+
+= render(:partial => 'layouts/container', :locals => {:container_class => "#{id}-routes", :container_id => id})
