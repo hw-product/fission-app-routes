@@ -1,0 +1,22 @@
+:ruby
+  id = 'edit-custom-route'
+  content_for(:container) do
+    render(
+      :partial => 'layouts/panel',
+      :locals => {
+        :id => id,
+        :heading => "Edit Custom Route - #{@route.name}",
+        :panel_content => render(
+          :partial => 'form',
+          :locals => {
+            :form_opts => {
+              :url => route_path(@route.id),
+              :method => :put
+            }
+          }
+        )
+      }
+    )
+  end
+
+= render(:partial => 'layouts/container', :locals => {:container_class => "#{id}-form", :container_id => id})

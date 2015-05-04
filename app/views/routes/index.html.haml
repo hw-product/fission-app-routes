@@ -1,0 +1,26 @@
+- content_for(:heading_title) do
+  %div.pull-right
+    %div.btn.btn-default.btn-sm= link_to('Create', new_route_path)
+
+:ruby
+  id = 'custom-routes'
+  content_for(:container) do
+    render(
+      :partial => 'layouts/panel',
+      :locals => {
+        :id => id,
+        :heading => ('Custom Routes' + yield(:heading_title)).html_safe,
+        :panel_content => render(
+          :partial => 'layouts/table',
+          :locals => {
+            :header_data => ["Custom Routes for: #{@account.name}"],
+            :data => @routes.map{|route|
+              [link_to(route.name, edit_route_path(route.id))]
+            }
+          }
+        )
+      }
+    )
+  end
+
+= render(:partial => 'layouts/container', :locals => {:container_class => "#{id}-list", :container_id => id})

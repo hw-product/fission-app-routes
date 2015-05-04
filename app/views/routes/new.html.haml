@@ -1,0 +1,22 @@
+:ruby
+  id = 'new-custom-route'
+  content_for(:container) do
+    render(
+      :partial => 'layouts/panel',
+      :locals => {
+        :id => id,
+        :heading => 'New Custom Route',
+        :panel_content => render(
+          :partial => 'form',
+          :locals => {
+            :form_opts => {
+              :url => routes_path,
+              :method => :post
+            }
+          }
+        )
+      }
+    )
+  end
+
+= render(:partial => 'layouts/container', :locals => {:container_class => "#{id}-form", :container_id => id})

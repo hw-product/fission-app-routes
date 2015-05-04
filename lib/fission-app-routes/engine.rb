@@ -36,7 +36,7 @@ module FissionApp
       # @return [Hash] navigation
       def fission_navigation(product, current_user)
         Smash.new(
-          'Routes' => Rails.application.url_helpers.routes_path
+          'Routes' => Rails.application.routes.url_helpers.routes_path
         )
       end
 

@@ -1,0 +1,52 @@
+= bootstrap_form_tag form_opts.merge(:html => {:id => 'route-form'}) do |f|
+  = f.text_field :name, :value => @route ? @route.name : nil, :disabled => !!@route
+  = f.text_field :description, :value => @route ? @route.description : nil
+  %div.col-md-3.pull-left.route-items
+    %div.panel.panel-success
+      %div.panel-heading
+        Route Items
+      %div.panel-body
+        %ul.list-group.bg-success.services-connector.service.service-group#route-items{:style => 'list-style-type: none; min-height: 20px'}
+          - if @route
+            - @service_group.services.each do |service|
+              %li.list-group-item{:service_id => service.id}= service.name
+  %div.col-md-3.service-available-list
+    %div.panel.panel-warning
+      %div.panel-heading
+        Available Services
+      %div.panel-body
+        %ul.list-group.bg-warning.services-connector.service#all-services{:style => 'list-style-type: none; min-height: 20px'}
+          - @services.each do |service|
+            %li.list-group-item.service{:service_id => service.id, :style => 'background-color: #fcf8ec'}
+              %span.bg-warning= service.name
+  %div.col-md-3.service-available-list
+    %div.panel.panel-info
+      %div.panel-heading
+        Available Service Groups
+      %div.panel-body
+        %ul.list-group.bg-info.services-connector.service-group#all-service-groups{:style => 'list-style-type: none; min-height: 20px'}
+          - @service_groups.each do |service_group|
+            %li.list-group-item.bg-info.service-group{:service_group_id => service_group.id, :style => 'background-color: #d9edf7'}= service_group.name
+
+  %div.clearfix
+  = f.submit 'Save', :disable_with => 'Saving...'
+
+:javascript
+  $(document).ready(
+    function(){
+      $("#route-items, #all-services, #all-service-groups").sortable({
+        connectWith: ".services-connector",
+        receive: function(event, ui){
+          if(!ui.item.parent().is("." + ui.item.attr('class').split(' ').join(', .'))){
+            ui.sender.sortable('cancel');
+          }
+        }
+      }).disableSelection();
+      $('#route-form').submit(function(event){
+        $('#route-items li').each(function(){
+          console.log('wat: ' + $(this).attr('service_id'));
+          $('#route-form').append('<input type="hidden" name="services[]" value="' + $(this).attr('service_id') + '" />');
+        });
+      });
+    }
+  );

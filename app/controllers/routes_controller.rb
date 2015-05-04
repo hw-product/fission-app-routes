@@ -18,7 +18,10 @@ class RoutesController < ApplicationController
         flash[:error] = 'Unsupported request!'
         javascript_redirect_to dashboard_path
       end
-      format.html
+      format.html do
+        @services = @account.product_features.map(&:services).flatten.uniq.sort_by(&:name)
+        @service_groups = @account.product_features.map(&:service_groups).flatten.uniq.sort_by(&:name)
+      end
     end
   end
 
