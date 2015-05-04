@@ -34,7 +34,7 @@ class RoutesController < ApplicationController
       end
       format.html do
         route = Route.create(
-          :name => params[:name],
+          :name => Bogo::Utility.snake(params[:name]).tr(' ', '_'),
           :description => params[:description],
           :account_id => @account.id
         )
