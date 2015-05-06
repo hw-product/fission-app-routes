@@ -67,6 +67,28 @@
           idx++;
           $('#route-form').append('<input type="hidden" name="' + $(this).attr('item_type') + '[' + idx + ']" value="' + $(this).attr('item_id') + '" />');
         });
+        $('#route-form .route-config').each(
+          function(idx, item){
+            console.log(idx);
+            config_id = item.id;
+            console.log(config_id);
+            config_elm = $(item);
+            config_name = 'configs[' + config_id + ']';
+            $('#route-form').append('<input type="hidden" name="' + config_name + '[name]" value="' + $('#' + config_id + '-name').val() + '" />');
+            $('#route-form').append('<input type="hidden" name="' + config_name + '[description]" value="' + $('#' + config_id + '-name').val() + '" />');
+            config_elm.find('.config-pack li').each(
+              function(c_idx, c_item){
+                console.log(c_item);
+                $('#route-form').append('<input type="hidden" name="' + config_name + '[config_id][]" value="' + $(c_item).attr('config_id') + '" />');
+              }
+            );
+            config_elm.find('.config-rule').each(
+              function(r_idx, r_item){
+                $('#route-form').append('<input type="hidden" name="' + config_name + '[rule_id][' + r_idx + '][' + $(r_item).attr('rule_id') + ']" value="' + $(r_item).attr('rule_value') + '" />');
+              }
+            );
+          }
+        );
       });
     }
   );
