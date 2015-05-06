@@ -33,32 +33,7 @@ class RoutesController < ApplicationController
         javascript_redirect_to dashboard_path
       end
       format.html do
-        route = Route.create(
-          :name => Bogo::Utility.snake(params[:name]).tr(' ', '_'),
-          :description => params[:description],
-          :account_id => @account.id
-        )
-        @services = @account.product_features.map(&:services).flatten.uniq.sort_by(&:name)
-        @service_groups = @account.product_features.map(&:service_groups).flatten.uniq.sort_by(&:name)
-        @custom_services = @account.custom_services
-        params.fetch(:service, []).each do |position, srv_id|
-          route.add_service(
-            :position => position,
-            :service => @services.detect{|s| s.id == srv_id.to_i}
-          )
-        end
-        params.fetch('service-group', []).each do |position, grp_id|
-          route.add_service_group(
-            :position => position,
-            :service_group => @service_groups.detect{|s| s.id == grp_id.to_i}
-          )
-        end
-        params.fetch('custom-service', []).each do |position, grp_id|
-          route.add_custom_service(
-            :position => position,
-            :custom_service => @custom_services.detect{|s| s.id == grp_id.to_i}
-          )
-        end
+        save_route!
         flash[:success] = 'Created new route!'
         redirect_to routes_path
       end
@@ -73,12 +48,15 @@ class RoutesController < ApplicationController
       end
       format.html do
         @route = @account.routes_dataset.where(:id => params[:id]).first
-        @services = @account.product_features.map(&:services).flatten.uniq.sort_by(&:name) - (@route.services || [])
-        @service_groups = @account.product_features.map(&:service_groups).flatten.uniq.sort_by(&:name) - (@route.service_groups || [])
-        @custom_services = @account.custom_services_dataset.order(:name).all - (@route.custom_services || [])
         unless(@route)
           flash[:error] = 'Failed to locate requested route'
           redirect_to routes_path
+        else
+          @services = @account.product_features.map(&:services).flatten.uniq.sort_by(&:name) - (@route.services || [])
+          @service_groups = @account.product_features.map(&:service_groups).flatten.uniq.sort_by(&:name) - (@route.service_groups || [])
+          @custom_services = @account.custom_services_dataset.order(:name).all - (@route.custom_services || [])
+          @configs = @account.account_configs_dataset.order(:name).all
+          @match_rules = PayloadMatchRule.order(:name).all
         end
       end
     end
@@ -91,36 +69,13 @@ class RoutesController < ApplicationController
         javascript_redirect_to dashboard_path
       end
       format.html do
-        route = Route.find_by_id(params[:id])
+        route = @account.routes_dataset.where(:id => params[:id]).first
         if(route)
-          route.remove_all_services
-          route.remove_all_custom_services
-          route.remove_all_service_groups
-          unless(route.description == params[:description])
+          if(route.description != params[:description])
             route.description = params[:description]
             route.save
           end
-          @services = @account.product_features.map(&:services).flatten.uniq.sort_by(&:name)
-          @service_groups = @account.product_features.map(&:service_groups).flatten.uniq.sort_by(&:name)
-          @custom_services = @account.custom_services
-          params.fetch(:service, []).each do |position, srv_id|
-            route.add_service(
-              :position => position,
-              :service => @services.detect{|s| s.id == srv_id.to_i}
-            )
-          end
-          params.fetch('service-group', []).each do |position, grp_id|
-            route.add_service_group(
-              :position => position,
-              :service_group => @service_groups.detect{|s| s.id == grp_id.to_i}
-            )
-          end
-          params.fetch('custom-service', []).each do |position, grp_id|
-            route.add_custom_service(
-              :position => position,
-              :custom_service => @custom_services.detect{|s| s.id == grp_id.to_i}
-            )
-          end
+          save_route!(route)
           flash[:success] = 'Updated route!'
           redirect_to routes_path
         else
@@ -211,6 +166,74 @@ class RoutesController < ApplicationController
         flash[:error] = 'Unsupported request!'
         redirect_to dashboard_path
       end
+    end
+  end
+
+  private
+
+  def save_route!(route=nil)
+    unless(route)
+      route = Route.find_or_create(
+        :name => Bogo::Utility.snake(params[:name]).tr(' ', '_'),
+        :description => params[:description],
+        :account_id => @account.id
+      )
+    end
+    services = @account.product_features.map(&:services).flatten.uniq.sort_by(&:name)
+    service_groups = @account.product_features.map(&:service_groups).flatten.uniq.sort_by(&:name)
+    custom_services = @account.custom_services
+    route.remove_all_services
+    route.remove_all_service_groups
+    route.remove_all_custom_services
+    params.fetch(:service, []).each do |position, srv_id|
+      srv = services.detect{|s| s.id == srv_id.to_i}
+      route.add_service(
+        :position => position,
+        :service => srv
+      )
+    end
+    params.fetch('service-group', []).each do |position, grp_id|
+      grp = service_groups.detect{|s| s.id == grp_id.to_i}
+      route.add_service_group(
+        :position => position,
+        :service_group => grp
+      )
+    end
+    params.fetch('custom-service', []).each do |position, grp_id|
+      srv = custom_services.detect{|s| s.id == grp_id.to_i}
+      route.add_custom_service(
+        :position => position,
+        :custom_service => srv
+      )
+    end
+    r_config_ids = params.fetch('configs', {}).map do |ident, config|
+      r_config = RouteConfig.find_or_create(
+        :name => config[:name],
+        :description => config[:description],
+        :route_id => route.id
+      )
+      r_config.remove_all_account_configs
+      config[:config_id].each_with_index do |c_id, c_idx|
+        account_config = @account.account_configs_dataset.where(:id => c_id).first
+        r_config.add_account_config(
+          :account_config => account_config,
+          :position => c_idx
+        )
+      end
+      r_config.remove_all_payload_matchers
+      config[:rule_id].each do |r_idx, r_pair|
+        matcher = PayloadMatcher.find_or_create(
+          :payload_match_rule_id => r_pair.keys.first,
+          :account_id => @account.id,
+          :value => r_pair.values.first
+        )
+        r_config.add_payload_matcher(matcher)
+      end
+      r_config.id
+    end
+    deleted_configs = route.route_configs.map(&:id) - r_config_ids
+    unless(deleted_configs.empty?)
+      RouteConfig.where(:id => deleted_configs).destroy
     end
   end
 
