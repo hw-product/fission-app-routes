@@ -47,6 +47,9 @@
           Configuration Apply Matchers
         .panel-body
           %table.table.table-striped{:id => "rules-#{suffix}"}
+            - if config && config.payload_matchers
+              - config.payload_matchers.each do |match|
+                = render :partial => 'rule', :locals => {:rule => match.payload_match_rule, :value => match.value}
           .dropdown.pull-right
             %button.btn.btn-primary{:id => 'drop', :type => 'button', 'data-toggle' => 'dropdown', 'aria-haspopup' => true, 'aria-expanded' => false}
               Add Match

@@ -1,8 +1,10 @@
 - rule_ident = SecureRandom.uuid
-%tr.config-rule{:id => rule_ident, :rule_id => @rule.id, :rule_value => @value}
+- rule = @rule unless rule
+- value = @value unless value
+%tr.config-rule{:id => rule_ident, :rule_id => rule.id, :rule_value => value}
   %td
-    %b= @rule.name
-  %td= @value
+    %b= rule.name
+  %td= value
   %td
     %a.btn.btn-danger.btn-xs{:href => remove_config_rule_routes_path(:rule_ident => rule_ident), 'data-remote' => true}
       %span.glyphicon.glyphicon-trash
