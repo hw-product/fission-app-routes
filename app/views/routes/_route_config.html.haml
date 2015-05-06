@@ -24,7 +24,7 @@
         .panel-heading
           Configuration Packs
         .panel-body
-          .col-md-6.pull-left.route-items
+          .col-md-6.pull-left.config-pack
             .panel.panel-success
               .panel-heading
                 Applied Packs
@@ -33,7 +33,7 @@
                   - if config
                     - config.account_configs.each do |a_config|
                       %li.list-group-item{:config_id => a_config.id, :style => 'background-color: inherit'}= a_config.name
-          .col-md-6.pull-left.route-items
+          .col-md-6.pull-left.config-items
             .panel.panel-danger
               .panel-heading
                 Available Packs
