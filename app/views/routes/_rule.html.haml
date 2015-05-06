@@ -1,5 +1,5 @@
 - rule_ident = SecureRandom.uuid
-%tr{:id => rule_ident}
+%tr.config-rule{:id => rule_ident, :rule_id => @rule.id, :rule_value => @value}
   %td
     %b= @rule.name
   %td= @value
