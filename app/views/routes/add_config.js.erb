@@ -1,0 +1,18 @@
+<%
+  ident = SecureRandom.uuid
+  content = render(
+    :partial => 'route_config',
+    :locals => {
+      :config => @config,
+      :configs => @configs,
+      :rules => @match_rules,
+      :suffix => ident
+    }
+  )
+-%>
+$('.collapse').collapse('hide');
+content = $("<%= escape_javascript(content) -%>");
+content.hide();
+content.insertBefore('#config-adder');
+$("#<%= ident -%>").fadeIn('slow', function(){$("#<%= ident -%>-body").collapse('show');});
+setTimeout(function(){$('#<%= ident -%>-name').focus().select(); $('html, body').animate({scrollTop: $('#<%= ident -%>').offset().top});}, 1000);

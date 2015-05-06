@@ -22,8 +22,6 @@ class RoutesController < ApplicationController
         @services = @account.product_features.map(&:services).flatten.uniq.sort_by(&:name)
         @service_groups = @account.product_features.map(&:service_groups).flatten.uniq.sort_by(&:name)
         @custom_services = @account.custom_services_dataset.order(:name).all
-        @configs = @account.account_configs_dataset.order(:name).all
-        @match_rules = PayloadMatchRule.order(:name).all
       end
     end
   end
@@ -183,6 +181,31 @@ class RoutesController < ApplicationController
     respond_to do |format|
       format.js do
         @rule_ident = params[:rule_ident]
+      end
+      format.html do
+        flash[:error] = 'Unsupported request!'
+        redirect_to dashboard_path
+      end
+    end
+  end
+
+  def add_config
+    respond_to do |format|
+      format.js do
+        @configs = @account.account_configs_dataset.order(:name).all
+        @match_rules = PayloadMatchRule.order(:name).all
+      end
+      format.html do
+        flash[:error] = 'Unsupported request!'
+        redirect_to dashboard_path
+      end
+    end
+  end
+
+  def remove_config
+    respond_to do |format|
+      format.js do
+        @ident = params[:ident]
       end
       format.html do
         flash[:error] = 'Unsupported request!'

@@ -1,51 +1,61 @@
-- suffix = SecureRandom.uuid
+- suffix = SecureRandom.uuid if suffix.nil?
 - config = nil unless defined?(config)
 - configs = [] unless defined?(configs)
 
-%div.panel.panel-default.route-config{:config_identifier => suffix}
-  %div.panel-heading= config ? "Configuration: #{config.name}" : 'New Configuration'
-  %div.panel-body
-    = form.text_field :name, :value => config ? config.name : nil, :disabled => !!config
-    = form.text_field :description, :value => config ? config.description : nil
-    %div.col-md-6.pull-left
-      %div.panel.panel-default
-        %div.panel-heading
+.panel.panel-default.route-config{:config_identifier => suffix, :id => suffix}
+  .panel-heading
+    = config ? "Configuration: #{config.name}" : 'New Configuration'
+    .pull-right
+      %a.btn.btn-default.btn-xs{:href => "##{suffix}-body", 'aria-expanded' => false, 'data-toggle' => 'collapse', 'aria-controls' => "#{suffix}-body"}
+        %span.glyphicon.glyphicon-pencil
+      %a.btn.btn-danger.btn-xs{:href => remove_config_routes_path(:ident => suffix), 'data-remote' => true}
+        %span.glyphicon.glyphicon-trash
+  .panel-body.collapse{:id => "#{suffix}-body"}
+    .form-group
+      %label.control-label{:for => 'name'}
+        Name
+      %input.form-control{:type => 'text', :name => 'name', :value => config ? config.name : nil, :disabled => !!config, :id => "#{suffix}-name", :autofocus => 'autofocus'}
+    .form-group
+      %label.control-label{:for => 'description'}
+        Description
+      %input.form-control{:type => 'text', :name => 'description', :value => config ? config.description : nil, :id => "#{suffix}-description"}
+    .col-md-6.pull-left
+      .panel.panel-default
+        .panel-heading
           Configuration Packs
-        %div.panel-body
-          %div.col-md-6.pull-left.route-items
-            %div.panel.panel-success
-              %div.panel-heading
+        .panel-body
+          .col-md-6.pull-left.route-items
+            .panel.panel-success
+              .panel-heading
                 Applied Packs
-              %div.panel-body
-                %ul.list-group.bg-success.configs-connector{:id => "route-configs-#{suffix}", :style => 'list-style-type: none; min-height: 20px', :class => suffix}
+              .panel-body
+                .list-group.bg-success{:id => "route-configs-#{suffix}", :style => 'list-style-type: none; min-height: 20px', :class => suffix}
                   - if config
                     - config.account_configs.each do |a_config|
                       %li.list-group-item{:config_id => a_config.id, :style => 'background-color: inherit'}= a_config.name
-          %div.col-md-6.pull-left.route-items
-            %div.panel.panel-danger
-              %div.panel-heading
+          .col-md-6.pull-left.route-items
+            .panel.panel-danger
+              .panel-heading
                 Available Packs
-              %div.panel-body
-                %ul.list-group.bg-danger.configs-connector{:id => "available-configs-#{suffix}", :style => 'list-style-type: none; min-height: 20px', :class => suffix}
+              .panel-body
+                %ul.list-group.bg-danger{:id => "available-configs-#{suffix}", :style => 'list-style-type: none; min-height: 20px', :class => suffix}
                   - configs.each do |config|
                     %li.list-group-item{:config_id => config.id, :style => 'background-color: inherit'}= config.name
-    %div.col-md-6
-      %div.panel.panel-default{:id => SecureRandom.uuid}
-        %div.panel-heading
+    .col-md-6
+      .panel.panel-default{:id => SecureRandom.uuid}
+        .panel-heading
           Configuration Apply Matchers
-        %div.panel-body
-          %table.table.striped-table{:id => "rules-#{suffix}"}
-          %div.dropdown.pull-right
-            %button.btn.btn-success{:id => 'drop', :type => 'button', 'data-toggle' => 'dropdown', 'aria-haspopup' => true, 'aria-expanded' => false}
+        .panel-body
+          %table.table.table-striped{:id => "rules-#{suffix}"}
+          .dropdown.pull-right
+            %button.btn.btn-primary{:id => 'drop', :type => 'button', 'data-toggle' => 'dropdown', 'aria-haspopup' => true, 'aria-expanded' => false}
               Add Match
               %span.caret
             %ul.dropdown-menu{:role => 'menu', 'aria-labelledby' => 'drop'}
               - rules.each do |rule|
                 %li= link_to rule.name, add_config_rule_routes_path(:rule => rule.id, :identifier => suffix), :remote => true
 
-    %div.clearfix
-
-    %div.clearfix
+    .clearfix
 :javascript
   $(document).ready(
     function(){
