@@ -22,6 +22,8 @@ class RoutesController < ApplicationController
         @services = @account.product_features.map(&:services).flatten.uniq.sort_by(&:name)
         @service_groups = @account.product_features.map(&:service_groups).flatten.uniq.sort_by(&:name)
         @custom_services = @account.custom_services_dataset.order(:name).all
+        @configs = @account.account_configs_dataset.order(:name).all
+        @match_rules = PayloadMatchRule.order(:name).all
       end
     end
   end
@@ -146,6 +148,45 @@ class RoutesController < ApplicationController
         @route.destroy
         flash[:success] = 'Route has been deleted!'
         redirect_to routes_path
+      end
+    end
+  end
+
+  def add_config_rule
+    respond_to do |format|
+      format.js do
+        @rule = PayloadMatchRule.find_by_id(params[:rule])
+        @identifier = params[:identifier]
+      end
+      format.html do
+        flash[:error] = 'Unsupported request!'
+        redirect_to dashboard_path
+      end
+    end
+  end
+
+  def apply_config_rule
+    respond_to do |format|
+      format.js do
+        @rule = PayloadMatchRule.find_by_id(params[:rule_id])
+        @identifier = params[:identifier]
+        @value = params[:value]
+      end
+      format.html do
+        flash[:error] = 'Unsupported request!'
+        redirect_to dashboard_path
+      end
+    end
+  end
+
+  def remove_config_rule
+    respond_to do |format|
+      format.js do
+        @rule_ident = params[:rule_ident]
+      end
+      format.html do
+        flash[:error] = 'Unsupported request!'
+        redirect_to dashboard_path
       end
     end
   end

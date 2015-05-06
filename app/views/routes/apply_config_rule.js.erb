@@ -1,0 +1,12 @@
+<%
+content = render(
+  :partial => 'rule',
+  :locals => {
+    :name => @rule.name,
+    :value => @value
+  }
+)
+%>
+$('#rules-<%= @identifier -%>').append("<%= escape_javascript(content) -%>");
+sparkle_ui.display.highlight($('#rules-<%= @identifier -%>').parents('.panel').first().attr('id'), 'success');
+<%= close_window('config_rule') %>

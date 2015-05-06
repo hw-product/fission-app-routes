@@ -1,0 +1,56 @@
+- suffix = SecureRandom.uuid
+- config = nil unless defined?(config)
+- configs = [] unless defined?(configs)
+
+%div.panel.panel-default.route-config{:config_identifier => suffix}
+  %div.panel-heading= config ? "Configuration: #{config.name}" : 'New Configuration'
+  %div.panel-body
+    = form.text_field :name, :value => config ? config.name : nil, :disabled => !!config
+    = form.text_field :description, :value => config ? config.description : nil
+    %div.col-md-6.pull-left
+      %div.panel.panel-default
+        %div.panel-heading
+          Configuration Packs
+        %div.panel-body
+          %div.col-md-6.pull-left.route-items
+            %div.panel.panel-success
+              %div.panel-heading
+                Applied Packs
+              %div.panel-body
+                %ul.list-group.bg-success.configs-connector{:id => "route-configs-#{suffix}", :style => 'list-style-type: none; min-height: 20px', :class => suffix}
+                  - if config
+                    - config.account_configs.each do |a_config|
+                      %li.list-group-item{:config_id => a_config.id, :style => 'background-color: inherit'}= a_config.name
+          %div.col-md-6.pull-left.route-items
+            %div.panel.panel-danger
+              %div.panel-heading
+                Available Packs
+              %div.panel-body
+                %ul.list-group.bg-danger.configs-connector{:id => "available-configs-#{suffix}", :style => 'list-style-type: none; min-height: 20px', :class => suffix}
+                  - configs.each do |config|
+                    %li.list-group-item{:config_id => config.id, :style => 'background-color: inherit'}= config.name
+    %div.col-md-6
+      %div.panel.panel-default{:id => SecureRandom.uuid}
+        %div.panel-heading
+          Configuration Apply Matchers
+        %div.panel-body
+          %table.table.striped-table{:id => "rules-#{suffix}"}
+          %div.dropdown.pull-right
+            %button.btn.btn-success{:id => 'drop', :type => 'button', 'data-toggle' => 'dropdown', 'aria-haspopup' => true, 'aria-expanded' => false}
+              Add Match
+              %span.caret
+            %ul.dropdown-menu{:role => 'menu', 'aria-labelledby' => 'drop'}
+              - rules.each do |rule|
+                %li= link_to rule.name, add_config_rule_routes_path(:rule => rule.id, :identifier => suffix), :remote => true
+
+    %div.clearfix
+
+    %div.clearfix
+:javascript
+  $(document).ready(
+    function(){
+      $("#route-configs-#{suffix}, #available-configs-#{suffix}").sortable({
+        connectWith: ".#{suffix}"
+      }).disableSelection();
+    }
+  );

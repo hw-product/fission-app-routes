@@ -1,0 +1,9 @@
+%div.panel.panel-default
+  %div.panel-body
+    - if rule.description
+      %div.well.well-sm= rule.description
+    = bootstrap_form_tag :url => apply_config_rule_routes_path, :remote => true do |f|
+      = f.text_field :value
+      = f.hidden_field :rule_id, :value => rule.id
+      = f.hidden_field :identifier, :value => identifier
+      = f.submit 'Save', :disable_with => 'Saving...'

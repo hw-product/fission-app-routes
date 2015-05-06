@@ -1,0 +1,8 @@
+- rule_ident = SecureRandom.uuid
+%tr{:id => rule_ident}
+  %td
+    %b= @rule.name
+  %td= @value
+  %td
+    %a.btn.btn-danger.btn-xs{:href => remove_config_rule_routes_path(:rule_ident => rule_ident), 'data-remote' => true}
+      %span.glyphicon.glyphicon-trash

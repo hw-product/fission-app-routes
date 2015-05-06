@@ -1,46 +1,51 @@
 = bootstrap_form_tag form_opts.merge(:html => {:id => 'route-form'}) do |f|
   = f.text_field :name, :value => @route ? @route.name : nil, :disabled => !!@route
   = f.text_field :description, :value => @route ? @route.description : nil
-  %div.col-md-3.pull-left.route-items
-    %div.panel.panel-success
-      %div.panel-heading
-        Route Items
-      %div.panel-body
-        %ul.list-group.bg-success.services-connector.service.custom-service.service-group#route-items{:style => 'list-style-type: none; min-height: 20px'}
-          - if @route && @route.route_list
-            - @route.route_list.each do |item|
-              - if item.is_a?(Fission::Data::Models::Service)
-                %li.list-group-item.service{:item_type => 'service', :item_id => item.id, :style => 'background-color: #fcf8ec'}= item.name
-              - elsif item.is_a?(Fission::Data::Models::ServiceGroup)
-                %li.list-group-item.bg-info.service-group{:item_type => 'service-group', :item_id => item.id, :style => 'background-color: #d9edf7'}= item.name
-              - elsif item.is_a?(Fission::Data::Models::CustomService)
-                %li.list-group-item.bg-danger.custom-service{:item_type => 'custom-service', :item_id => item.id, :style => 'background-color: #f2dede'}= item.name
-  %div.col-md-3.service-available-list
-    %div.panel.panel-warning
-      %div.panel-heading
-        Available Services
-      %div.panel-body
-        %ul.list-group.bg-warning.services-connector.service#all-services{:style => 'list-style-type: none; min-height: 20px'}
-          - @services.each do |service|
-            %li.list-group-item.service{:item_type => 'service', :item_id => service.id, :style => 'background-color: #fcf8ec'}= service.name
-  %div.col-md-3.custom-service-available-list
-    %div.panel.panel-danger
-      %div.panel-heading
-        Custom Services
-      %div.panel-body
-        %ul.list-group.bg-danger.services-connector.custom-service#all-custom-services{:style => 'list-style-type: none; min-height: 20px'}
-          - @custom_services.each do |custom_service|
-            %li.list-group-item.bg-danger.custom-service{:item_type => 'custom-service', :item_id => custom_service.id, :style => 'background-color: #f2dede'}= custom_service.name
-  %div.col-md-3.service-group-available-list
-    %div.panel.panel-info
-      %div.panel-heading
-        Available Service Groups
-      %div.panel-body
-        %ul.list-group.bg-info.services-connector.service-group#all-service-groups{:style => 'list-style-type: none; min-height: 20px'}
-          - @service_groups.each do |service_group|
-            %li.list-group-item.bg-info.service-group{:item_type => 'service-group', :item_id => service_group.id, :style => 'background-color: #d9edf7'}= service_group.name
+  %div.panel.panel-default
+    %div.panel-heading
+      Route
+    %div.panel-body
+      %div.col-md-3.pull-left.route-items
+        %div.panel.panel-success
+          %div.panel-heading
+            Route Items
+          %div.panel-body
+            %ul.list-group.bg-success.services-connector.service.custom-service.service-group#route-items{:style => 'list-style-type: none; min-height: 20px'}
+              - if @route && @route.route_list
+                - @route.route_list.each do |item|
+                  - if item.is_a?(Fission::Data::Models::Service)
+                    %li.list-group-item.service{:item_type => 'service', :item_id => item.id, :style => 'background-color: #fcf8ec'}= item.name
+                  - elsif item.is_a?(Fission::Data::Models::ServiceGroup)
+                    %li.list-group-item.bg-info.service-group{:item_type => 'service-group', :item_id => item.id, :style => 'background-color: #d9edf7'}= item.name
+                  - elsif item.is_a?(Fission::Data::Models::CustomService)
+                    %li.list-group-item.bg-danger.custom-service{:item_type => 'custom-service', :item_id => item.id, :style => 'background-color: #f2dede'}= item.name
+      %div.col-md-3.service-available-list
+        %div.panel.panel-warning
+          %div.panel-heading
+            Available Services
+          %div.panel-body
+            %ul.list-group.bg-warning.services-connector.service#all-services{:style => 'list-style-type: none; min-height: 20px'}
+              - @services.each do |service|
+                %li.list-group-item.service{:item_type => 'service', :item_id => service.id, :style => 'background-color: #fcf8ec'}= service.name
+      %div.col-md-3.custom-service-available-list
+        %div.panel.panel-danger
+          %div.panel-heading
+            Custom Services
+          %div.panel-body
+            %ul.list-group.bg-danger.services-connector.custom-service#all-custom-services{:style => 'list-style-type: none; min-height: 20px'}
+              - @custom_services.each do |custom_service|
+                %li.list-group-item.bg-danger.custom-service{:item_type => 'custom-service', :item_id => custom_service.id, :style => 'background-color: #f2dede'}= custom_service.name
+      %div.col-md-3.service-group-available-list
+        %div.panel.panel-info
+          %div.panel-heading
+            Available Service Groups
+          %div.panel-body
+            %ul.list-group.bg-info.services-connector.service-group#all-service-groups{:style => 'list-style-type: none; min-height: 20px'}
+              - @service_groups.each do |service_group|
+                %li.list-group-item.bg-info.service-group{:item_type => 'service-group', :item_id => service_group.id, :style => 'background-color: #d9edf7'}= service_group.name
+      %div.clearfix
+  = render :partial => 'route_config', :locals => {:config => @config, :form => f, :configs => @configs, :rules => @match_rules}
 
-  %div.clearfix
   = f.submit 'Save', :disable_with => 'Saving...'
 
 :javascript

@@ -1,0 +1,14 @@
+<%=
+  create_window(
+    :name => 'config_rule',
+    :title => @rule.name,
+    :content => render(
+      :partial => 'route_config_rule',
+      :locals => {
+        :rule => @rule,
+        :identifier => @identifier
+      }
+    ),
+    :auto_open => true
+  )
+%>
