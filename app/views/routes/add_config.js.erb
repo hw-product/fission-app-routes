@@ -10,7 +10,7 @@
     }
   )
 -%>
-$('.collapse').collapse('hide');
+$('.collapse.in').collapse('hide');
 content = $("<%= escape_javascript(content) -%>");
 content.hide();
 content.insertBefore('#config-adder');

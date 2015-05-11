@@ -1,3 +1,10 @@
+- content_for(:delete) do
+  %span.glyphicon.glyphicon-trash
+- content_for(:heading_title) do
+  = "Edit Custom Route - #{@route.name}"
+  = link_to(yield(:delete), route_path(@route.id), :class => 'btn btn-xs btn-danger pull-right', :method => :delete, :remote => true)
+  .clearfix
+
 :ruby
   id = 'edit-custom-route'
   content_for(:container) do
@@ -5,7 +12,7 @@
       :partial => 'layouts/panel',
       :locals => {
         :id => id,
-        :heading => "Edit Custom Route - #{@route.name}",
+        :heading => yield(:heading_title),
         :panel_content => render(
           :partial => 'form',
           :locals => {

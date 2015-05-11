@@ -1,6 +1,9 @@
 - content_for(:heading_title) do
-  %div.pull-right
-    %div.btn.btn-default.btn-sm= link_to('Create', new_route_path)
+  = "Custom Routes for: #{@account.name}"
+  = link_to('Create', new_route_path, :class => 'btn btn-sm btn-success pull-right')
+  .clearfix
+- content_for(:delete) do
+  %span.glyphicon.glyphicon-trash
 
 :ruby
   id = 'custom-routes'
@@ -9,13 +12,22 @@
       :partial => 'layouts/panel',
       :locals => {
         :id => id,
-        :heading => ('Custom Routes' + yield(:heading_title)).html_safe,
+        :heading => yield(:heading_title),
         :panel_content => render(
           :partial => 'layouts/table',
           :locals => {
             :header_data => ["Custom Routes for: #{@account.name}"],
             :data => @routes.map{|route|
-              [link_to(route.name, edit_route_path(route.id))]
+              [
+                link_to(route.name, edit_route_path(route.id)),
+                link_to(
+                  yield(:delete),
+                  route_path(route.id),
+                  :remote => true,
+                  :method => :delete,
+                  :class => 'btn btn-xs btn-danger pull-right'
+                )
+              ]
             }
           }
         )

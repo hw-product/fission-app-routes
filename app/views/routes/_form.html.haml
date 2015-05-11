@@ -45,10 +45,11 @@
                 %li.list-group-item.bg-danger.custom-service{:item_type => 'custom-service', :item_id => custom_service.id, :style => 'background-color: #f2dede'}= custom_service.name
       %div.clearfix
 
-  - if @route && @route.route_configs
-    - @route.route_configs.each do |r_config|
-      = render :partial => 'route_config', :locals => {:config => r_config, :rules => @match_rules, :configs => @configs}
-  = link_to 'Add Config', add_config_routes_path, :class => 'btn btn-primary pull-right', :role => 'button', :remote => true, :id => 'config-adder'
+  #route-configs-list
+    - if @route && @route.route_configs
+      - @route.route_configs.each do |r_config|
+        = render :partial => 'route_config', :locals => {:config => r_config, :rules => @match_rules, :configs => @configs}
+    = link_to 'Add Config', add_config_routes_path, :class => 'btn btn-primary pull-right', :role => 'button', :remote => true, :id => 'config-adder'
 
   %div.clearfix
 
@@ -65,6 +66,7 @@
           }
         }
       }).disableSelection();
+      $('#route-configs-list').sortable().disableSelection();
       $('#route-form').submit(function(event){
         $('#route-items li').each(function(idx){
           idx++;

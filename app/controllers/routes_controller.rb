@@ -12,6 +12,29 @@ class RoutesController < ApplicationController
     end
   end
 
+  def show
+    route = @account.routes_dataset.where(:id => params[:id]).first
+    if(route)
+      session[:route_id] = route.id
+      flash[:success] = "Pipeline loaded: #{route.name}"
+    else
+      session.delete(:route_id)
+      if(params[:id].to_i == 0)
+        flash[:success] = 'Pipeline has been unset!'
+      else
+        flash[:error] = 'Failed to locate requested route'
+      end
+    end
+    respond_to do |format|
+      format.js do
+        javascript_redirect_to dashboard_path
+      end
+      format.html do
+        redirect_to dashboard_path
+      end
+    end
+  end
+
   def new
     respond_to do |format|
       format.js do
@@ -89,8 +112,14 @@ class RoutesController < ApplicationController
   def destroy
     respond_to do |format|
       format.js do
-        flash[:error] = 'Unsupported request!'
-        javascript_redirect_to dashboard_path
+        route = @account.routes_dataset.where(:id => params[:id]).first
+        if(route)
+          route.destroy
+          flash[:success] = 'Route has been destroyed!'
+        else
+          flash[:error] = 'Failed to located requested route'
+        end
+        javascript_redirect_to routes_path
       end
       format.html do
         @route = @account.routes_dataset.where(:id => params[:id]).first
@@ -99,7 +128,7 @@ class RoutesController < ApplicationController
           redirect_to routes_path
         end
         @route.destroy
-        flash[:success] = 'Route has been deleted!'
+        flash[:success] = 'Route has been destroyed!'
         redirect_to routes_path
       end
     end
@@ -206,10 +235,13 @@ class RoutesController < ApplicationController
         :custom_service => srv
       )
     end
+    t_idx = 0
     r_config_ids = params.fetch('configs', {}).map do |ident, config|
+      t_idx = t_idx.next
       r_config = RouteConfig.find_or_create(
         :name => config[:name],
         :description => config[:description],
+        :position => t_idx,
         :route_id => route.id
       )
       r_config.remove_all_account_configs
@@ -221,7 +253,7 @@ class RoutesController < ApplicationController
         )
       end
       r_config.remove_all_payload_matchers
-      config[:rule_id].each do |r_idx, r_pair|
+      config.fetch(:rule_id, {}).each do |r_idx, r_pair|
         matcher = PayloadMatcher.find_or_create(
           :payload_match_rule_id => r_pair.keys.first,
           :account_id => @account.id,
