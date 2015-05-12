@@ -1,5 +1,27 @@
 class RoutesController < ApplicationController
 
+  before_action do
+    if(params[:pipeline_name])
+      pipeline = @account.routes_dataset.where(:name => params[:pipeline_name]).first
+      if(pipeline && session[:route_id] != pipeline.id)
+        session[:route_id] = pipeline.id
+        redirect_to url_for(params)
+      end
+    end
+  end
+
+  def dashboard
+    respond_to do |format|
+      format.js do
+        flash[:error] = 'Unsupported request!'
+        javascript_redirect_to pipeline_dashboard_path
+      end
+      format.html do
+        @route = @account.routes_dataset.where(:name => params[:pipeline_name]).first
+      end
+    end
+  end
+
   def index
     respond_to do |format|
       format.js do
@@ -27,10 +49,10 @@ class RoutesController < ApplicationController
     end
     respond_to do |format|
       format.js do
-        javascript_redirect_to pipeline_jobs_path
+        javascript_redirect_to pipeline_jobs_path(:pipeline_name => route.name)
       end
       format.html do
-        redirect_to pipeline_jobs_path
+        redirect_to pipeline_dashboard_path(:pipeline_name => route.name)
       end
     end
   end
