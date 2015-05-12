@@ -15,13 +15,13 @@ module FissionApp
             end
             pipes['break'] = nil
             pipes['New'] = Rails.application.routes.url_helpers.new_route_path
-            pipes['Clear'] = route_path(0)
           end
           if(@pipeline)
             @navigation = Smash.new(
               @pipeline.name.humanize => pipe_list,
-              'Repositories' => pipeline_repositories_path,
-              'Jobs' => pipeline_jobs_path
+              'Dashboard' => pipeline_dashboard_path(:pipeline_name => @pipeline.name),
+              'Repositories' => pipeline_repositories_path(:pipeline_name => @pipeline.name),
+              'Jobs' => pipeline_jobs_path(:pipeline_name => @pipeline.name)
             )
           else
             @navigation = Smash.new(
@@ -44,6 +44,17 @@ module FissionApp
     class Engine < ::Rails::Engine
 
       config.to_prepare do |config|
+
+        # Hooks!
+
+        c_b = Rails.application.config.settings.fetch(:callbacks, :before, :dashboard, :summary, Smash.new)
+        c_b[:scrub_route] = lambda{|*_|
+          if(session.delete(:route_id))
+            @pipeline = nil
+          end
+        }
+        Rails.application.config.settings.set(:callbacks, :before, :dashboard, :summary, c_b)
+
         product = Fission::Data::Models::Product.find_by_internal_name('routes')
         unless(product)
           product = Fission::Data::Models::Product.create(
@@ -95,6 +106,23 @@ module FissionApp
       # @return [Array<Fission::Data::Models::Product>]
       def fission_product
         [Fission::Data::Models::Product.find_by_internal_name('routes')]
+      end
+
+      # @return [Smash]
+      def fission_dashboard(product, current_user)
+        routes = current_user.run_state.current_account.routes_dataset.order(:name).all
+        Smash.new.tap do |dash|
+          routes.each do |route|
+            dash[route.name] = Smash.new(
+              :cell => :default_route_dashboard,
+              :title => "#{route.name.humanize} Pipeline",
+              :url => Rails.application.routes.url_helpers.route_path(route.id),
+              :arguments => {
+                :route => route
+              }
+            )
+          end
+        end
       end
 
     end
