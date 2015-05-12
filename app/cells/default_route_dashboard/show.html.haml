@@ -1,0 +1,43 @@
+%h4 Last 7 days: #{@jobs_summary.values.sum} jobs total
+%div#nellie_jobs_summary_graph
+%h4 Latest
+%table.table
+  %thead
+    %tr
+      %th Repository
+      %th Status
+  %tbody
+  - @recent.each do |job|
+    %tr{:colspan => 5}
+      %td= job.payload.get(:data, :github, :repository, :name)
+      %td= job.status
+:javascript
+  #{
+    graph_generate(
+      'nellie_jobs_summary_graph',
+      :size => {
+        :height => 100
+      },
+      :line => {
+        :label => {
+          :show => false
+        }
+      },
+      :data => {
+        :type => 'donut',
+        :columns => @jobs_summary.map{|k,v|
+          [k, v]
+        },
+        :names => Hash[
+          @jobs_summary.keys.map{|k|
+            [k.to_s, k.to_s.humanize]
+          }
+        ],
+        :colors => {
+          'complete' => 'green',
+          'error' => 'red',
+          'in_progress' => 'gray'
+        }
+      }
+    )
+  }
