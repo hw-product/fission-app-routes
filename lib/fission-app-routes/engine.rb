@@ -20,6 +20,7 @@ module FissionApp
             @navigation = Smash.new(
               @pipeline.name.humanize => pipe_list,
               'Dashboard' => pipeline_dashboard_path(:pipeline_name => @pipeline.name),
+              'Manage' => edit_route_path(@pipeline.id),
               'Repositories' => pipeline_repositories_path(:pipeline_name => @pipeline.name),
               'Jobs' => pipeline_jobs_path(:pipeline_name => @pipeline.name)
             )
