@@ -1,5 +1,15 @@
 class RouteJobsController < JobsController
 
+  before_action do
+    if(params[:pipeline_name])
+      pipeline = @account.routes_dataset.where(:name => params[:pipeline_name]).first
+      if(pipeline && session[:route_id] != pipeline.id)
+        session[:route_id] = pipeline.id
+        redirect_to url_for(params)
+      end
+    end
+  end
+
   protected
 
   def set_valid_jobs
