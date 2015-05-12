@@ -27,10 +27,10 @@ class RoutesController < ApplicationController
     end
     respond_to do |format|
       format.js do
-        javascript_redirect_to dashboard_path
+        javascript_redirect_to pipeline_jobs_path
       end
       format.html do
-        redirect_to dashboard_path
+        redirect_to pipeline_jobs_path
       end
     end
   end
