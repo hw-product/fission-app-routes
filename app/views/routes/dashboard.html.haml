@@ -1,0 +1,19 @@
+:ruby
+  id = "route-#{@route.id}"
+  content_for(:container) do
+    render(
+      :partial => 'layouts/panel',
+      :locals => {
+        :id => id,
+        :heading => "#{@route.name.humanize} Pipeline",
+        :panel_content => render(
+          :partial => 'dashboard_widgets',
+          :locals => {
+            :route => @route
+          }
+        )
+      }
+    )
+  end
+
+= render(:partial => 'layouts/container', :locals => {:container_class => "#{id}-dashboard", :container_id => id})
