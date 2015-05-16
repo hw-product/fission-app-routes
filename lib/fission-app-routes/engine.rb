@@ -57,13 +57,6 @@ module FissionApp
             @pipeline = nil
           end
         end
-        c_b[:buy_our_stuff!] = lambda do |*_|
-          if(@account.products.empty?)
-            if(Rails.application.config.settings.fetch(:fission, :no_products_redirect, true))
-              redirect_to Rails.application.config.settings.fetch(:fission, :no_products_redirect, pricing_path)
-            end
-          end
-        end
         Rails.application.config.settings.set(:callbacks, :before, :dashboard, :summary, c_b)
 
         product = Fission::Data::Models::Product.find_by_internal_name('routes')
