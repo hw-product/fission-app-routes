@@ -6,7 +6,7 @@ module FissionApp
       def route_set_navigation
         nav, acct_nav = non_route_set_navigation
         if(isolated_product? && !session[:route_id])
-          session[:route_id] = @account.routes_dataset.where(:name => @product.internal_name).first.id
+          session[:route_id] = @account.routes_dataset.where(:name => @product.internal_name).first.try(:id)
         end
         if(session[:route_id])
           @pipeline = @account.routes_dataset.where(:id => session[:route_id]).first
