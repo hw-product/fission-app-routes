@@ -26,9 +26,7 @@ module FissionApp
                   _nav[@pipeline.name.humanize] = pipe_list
                 end
                 _nav['Dashboard'] = pipeline_dashboard_path(:pipeline_name => @pipeline.name)
-                if(current_user.run_state.product_features.map(&:name).include?('routes_full_access'))
-                  _nav['Manage'] = edit_route_path(@pipeline.id)
-                end
+                _nav['Manage'] = edit_route_path(@pipeline.id)
                 _nav['Repositories'] = pipeline_repositories_path(:pipeline_name => @pipeline.name)
                 _nav['Jobs'] = pipeline_jobs_path(:pipeline_name => @pipeline.name)
               end
