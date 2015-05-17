@@ -107,46 +107,29 @@ module FissionApp
         end
         c_b = Rails.application.config.settings.set(:callbacks, :after, 'account/billing', :order, c_b)
 
-        product = Fission::Data::Models::Product.find_by_internal_name('routes')
-        unless(product)
-          product = Fission::Data::Models::Product.create(
-            :name => 'Routes'
-          )
-        end
-        feature = Fission::Data::Models::ProductFeature.find_by_name('routes_full_access')
-        unless(feature)
-          feature = Fission::Data::Models::ProductFeature.create(
-            :name => 'routes_full_access',
-            :product_id => product.id
-          )
-        end
-        unless(feature.permissions_dataset.where(:name => 'routes_full_access').count > 0)
-          args = {:name => 'routes_full_access', :pattern => '/routes.*'}
-          permission = Fission::Data::Models::Permission.where(args).first
-          unless(permission)
-            permission = Fission::Data::Models::Permission.create(args)
-          end
-          unless(feature.permissions.include?(permission))
-            feature.add_permission(permission)
-          end
+        product = Fission::Data::Models::Product.find_or_create(:name => 'Routes')
+        feature = Fission::Data::Models::ProductFeature.find_or_create(
+          :name => 'Editor',
+          :product_id => product.id
+        )
+        permission = Fission::Data::Models::Permission.find_or_create(
+          :name => 'Routes editor access',
+          :pattern => '/routes.*'
+        )
+        unless(feature.permissions.include?(permission))
+          feature.add_permission(permission)
         end
 
-        feature = Fission::Data::Models::ProductFeature.find_by_name('routes_pipeline_access')
-        unless(feature)
-          feature = Fission::Data::Models::ProductFeature.create(
-            :name => 'routes_pipeline_access',
-            :product_id => product.id
-          )
-        end
-        unless(feature.permissions_dataset.where(:name => 'routes_pipeline_access').count > 0)
-          args = {:name => 'routes_pipeline_access', :pattern => '/pipeline.*'}
-          permission = Fission::Data::Models::Permission.where(args).first
-          unless(permission)
-            permission = Fission::Data::Models::Permission.create(args)
-          end
-          unless(feature.permissions.include?(permission))
-            feature.add_permission(permission)
-          end
+        feature = Fission::Data::Models::ProductFeature.find_or_create(
+          :name => 'Pipeline views',
+          :product_id => product.id
+        )
+        permission = Fission::Data::Models::Permission.find_or_create(
+          :name => 'Routes pipeline view access',
+          :pattern => '/pipeline.*'
+        )
+        unless(feature.permissions.include?(permission))
+          feature.add_permission(permission)
         end
 
         [ApplicationController, *ApplicationController.descendants].each do |klass|
