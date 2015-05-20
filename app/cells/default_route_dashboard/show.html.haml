@@ -5,12 +5,14 @@
   %thead
     %tr
       %th Repository
+      %th SHA
       %th Status
   %tbody
   - @recent.each do |job|
     %tr{:colspan => 5}
-      %td= job.payload.get(:data, :github, :repository, :name)
-      %td= job.status
+      %td= link_to(job.payload.fetch(:data, :github, :repository, :name, 'Unknown'), job.payload.fetch(:data, :github, :repository, :url, '#'))
+      %td= link_to(job.payload.fetch(:data, :github, :head_commit, :id, 'Unknown'), job.payload.fetch(:data, :github, :head_commit, :url, '#'))
+      %td= link_to(job.status, pipeline_job_path(job.message_id))
 :javascript
   #{
     graph_generate(
