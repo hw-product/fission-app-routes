@@ -1,6 +1,4 @@
 - suffix = SecureRandom.uuid if suffix.nil?
-- config = nil unless defined?(config)
-- configs = [] unless defined?(configs)
 
 - content_for(:trashcan) do
   %span.glyphicon.glyphicon-trash
@@ -9,7 +7,7 @@
 
 .panel.panel-default.route-filter{:config_identifier => suffix, :id => suffix}
   .panel-heading
-    = config ? "Filter: #{filter.name}" : 'New Filter'
+    = filter ? "Filter: #{filter.name}" : 'New Filter'
     .pull-right
       %a.btn.btn-default.btn-xs{:href => "##{suffix}-body", 'aria-expanded' => false, 'data-toggle' => 'collapse', 'aria-controls' => "#{suffix}-body"}
         %span.glyphicon.glyphicon-pencil

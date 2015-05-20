@@ -369,7 +369,7 @@ class RoutesController < ApplicationController
         :route_id => route.id
       )
       if(filter)
-        current_matchers = filter.payload_matchers.dup
+        current_matchers = r_filter.payload_matchers.dup
         filter.fetch(:rule_id, {}).each do |r_idx, r_pair|
           matcher = PayloadMatcher.find_or_create(
             :payload_match_rule_id => r_pair.keys.first,
