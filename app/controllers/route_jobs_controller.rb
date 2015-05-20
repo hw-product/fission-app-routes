@@ -8,6 +8,7 @@ class RouteJobsController < JobsController
         redirect_to url_for(params)
       end
     end
+    @namespace = params[:namespace] = 'pipeline'
   end
 
   protected
@@ -22,7 +23,7 @@ class RouteJobsController < JobsController
     end
     params[:namespace] = @route.name
     super
-    params[:namespace] = 'pipeline'
+    @namespace = params[:namespace] = 'pipeline'
   end
 
 end
