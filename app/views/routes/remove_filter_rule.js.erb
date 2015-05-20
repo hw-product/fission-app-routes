@@ -1,0 +1,4 @@
+elm = $('#<%= @rule_ident -%>');
+container_id = elm.parents('.panel').first().attr('id');
+elm.remove();
+sparkle_ui.display.highlight(container_id, 'danger');

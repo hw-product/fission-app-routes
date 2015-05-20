@@ -1,15 +1,15 @@
 = bootstrap_form_tag form_opts.merge(:html => {:id => 'route-form'}) do |f|
   = f.text_field :name, :value => @route ? @route.name : nil, :disabled => !!@route, :autofocus => true
   = f.text_field :description, :value => @route ? @route.description : nil
-  %div.panel.panel-default#route-builder
-    %div.panel-heading
+  .panel.panel-default#route-builder
+    .panel-heading
       Route
-    %div.panel-body
-      %div.col-md-3.pull-left.route-items
-        %div.panel.panel-success
-          %div.panel-heading
+    .panel-body
+      .col-md-3.pull-left.route-items
+        .panel.panel-success
+          .panel-heading
             Route Items
-          %div.panel-body
+          .panel-body
             %ul.list-group.bg-success.services-connector.service.custom-service.service-group#route-items{:style => 'list-style-type: none; min-height: 20px'}
               - if @route && @route.route_list
                 - @route.route_list.each do |item|
@@ -19,39 +19,48 @@
                     %li.list-group-item.bg-info.service-group{:item_type => 'service-group', :item_id => item.id, :style => 'background-color: #d9edf7'}= item.name
                   - elsif item.is_a?(Fission::Data::Models::CustomService)
                     %li.list-group-item.bg-danger.custom-service{:item_type => 'custom-service', :item_id => item.id, :style => 'background-color: #f2dede'}= item.name
-      %div.col-md-3.service-available-list
-        %div.panel.panel-warning
-          %div.panel-heading
+      .col-md-3.service-available-list
+        .panel.panel-warning
+          .panel-heading
             Available Services
-          %div.panel-body
+          .panel-body
             %ul.list-group.bg-warning.services-connector.service#all-services{:style => 'list-style-type: none; min-height: 20px'}
               - @services.each do |service|
                 %li.list-group-item.service{:item_type => 'service', :item_id => service.id, :style => 'background-color: #fcf8ec'}= service.name
-      %div.col-md-3.service-group-available-list
-        %div.panel.panel-info
-          %div.panel-heading
+      .col-md-3.service-group-available-list
+        .panel.panel-info
+          .panel-heading
             Available Service Groups
-          %div.panel-body
+          .panel-body
             %ul.list-group.bg-info.services-connector.service-group#all-service-groups{:style => 'list-style-type: none; min-height: 20px'}
               - @service_groups.each do |service_group|
                 %li.list-group-item.bg-info.service-group{:item_type => 'service-group', :item_id => service_group.id, :style => 'background-color: #d9edf7'}= service_group.name
-      %div.col-md-3.custom-service-available-list
-        %div.panel.panel-danger
-          %div.panel-heading
+      .col-md-3.custom-service-available-list
+        .panel.panel-danger
+          .panel-heading
             Custom Services
-          %div.panel-body
+          .panel-body
             %ul.list-group.bg-danger.services-connector.custom-service#all-custom-services{:style => 'list-style-type: none; min-height: 20px'}
               - @custom_services.each do |custom_service|
                 %li.list-group-item.bg-danger.custom-service{:item_type => 'custom-service', :item_id => custom_service.id, :style => 'background-color: #f2dede'}= custom_service.name
-      %div.clearfix
+      .clearfix
 
   #route-configs-list
-    - if @route && @route.route_configs
+    - if @route
       - @route.route_configs.each do |r_config|
         = render :partial => 'route_config', :locals => {:config => r_config, :rules => @match_rules, :configs => @configs}
     = link_to 'Add Config', add_config_routes_path, :class => 'btn btn-primary pull-right', :role => 'button', :remote => true, :id => 'config-adder'
 
-  %div.clearfix
+  .clearfix
+  %br
+
+  #route-payload-filter
+    - if @route
+      - @route.route_payload_filters.each do |r_filter|
+        = render :partial => 'route_filter', :locals => {:filter => r_filter, :rules => @match_rules}
+    = link_to 'Add Filter', add_filter_routes_path, :class => 'btn btn-primary pull-right', :role => 'button', :remote => true, :id => 'filter-adder'
+
+  .clearfix
 
   = f.submit 'Enable', :disable_with => 'Enabling...', :class => 'btn btn-success'
 
@@ -78,7 +87,7 @@
             config_elm = $(item);
             config_name = 'configs[' + config_id + ']';
             $('#route-form').append('<input type="hidden" name="' + config_name + '[name]" value="' + $('#' + config_id + '-name').val() + '" />');
-            $('#route-form').append('<input type="hidden" name="' + config_name + '[description]" value="' + $('#' + config_id + '-name').val() + '" />');
+            $('#route-form').append('<input type="hidden" name="' + config_name + '[description]" value="' + $('#' + config_id + '-description').val() + '" />');
             config_elm.find('.config-pack li').each(
               function(c_idx, c_item){
                 $('#route-form').append('<input type="hidden" name="' + config_name + '[config_id][]" value="' + $(c_item).attr('config_id') + '" />');
@@ -87,6 +96,20 @@
             config_elm.find('.config-rule').each(
               function(r_idx, r_item){
                 $('#route-form').append('<input type="hidden" name="' + config_name + '[rule_id][' + r_idx + '][' + $(r_item).attr('rule_id') + ']" value="' + $(r_item).attr('rule_value') + '" />');
+              }
+            );
+          }
+        );
+        $('#route-form .route-filter').each(
+          function(idx, item){
+            filter_id = item.id
+            filter_elm = $(item);
+            filter_name = 'filters[' + filter_id + ']';
+            $('#route-form').append('<input type="hidden" name="' + filter_name + '[name]" value="' + $('#' + filter_id + '-name').val() + '" />');
+            $('#route-form').append('<input type="hidden" name="' + filter_name + '[description]" value="' + $('#' + filter_id + '-description').val() + '" />');
+            filter_elm.find('.filter-rule').each(
+              function(r_idx, r_item){
+                $('#route-form').append('<input type="hidden" name="' + filter_name + '[rule_id][' + r_idx + '][' + $(r_item).attr('rule_id') + ']" value="' + $(r_item).attr('rule_value') + '" />');
               }
             );
           }

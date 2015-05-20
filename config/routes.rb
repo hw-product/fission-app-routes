@@ -2,10 +2,15 @@ Rails.application.routes.draw do
   resources :routes do
     collection do
       get :add_config
-      get :remove_config
+      delete :remove_config
       get :add_config_rule
-      get :remove_config_rule
+      delete :remove_config_rule
       post :apply_config_rule
+      get :add_filter
+      delete :remove_filter
+      get :add_filter_rule
+      post :apply_filter_rule
+      delete :remove_filter_rule
     end
   end
 

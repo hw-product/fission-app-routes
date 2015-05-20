@@ -1,0 +1,17 @@
+<%
+  ident = SecureRandom.uuid
+  content = render(
+    :partial => 'route_filter',
+    :locals => {
+      :filter => nil,
+      :rules => @match_rules,
+      :suffix => ident
+    }
+  )
+-%>
+$('.collapse.in').collapse('hide');
+content = $("<%= escape_javascript(content) -%>");
+content.hide();
+content.insertBefore('#filter-adder');
+$("#<%= ident -%>").fadeIn('slow', function(){$("#<%= ident -%>-body").collapse('show');});
+setTimeout(function(){$('#<%= ident -%>-name').focus().select(); $('html, body').animate({scrollTop: $('#<%= ident -%>').offset().top});}, 1000);

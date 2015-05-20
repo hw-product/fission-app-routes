@@ -156,6 +156,8 @@ class RoutesController < ApplicationController
     end
   end
 
+  # route config packs
+
   def add_config_rule
     respond_to do |format|
       format.js do
@@ -220,6 +222,71 @@ class RoutesController < ApplicationController
     end
   end
 
+  # route filters
+
+  def add_filter_rule
+    respond_to do |format|
+      format.js do
+        @rule = PayloadMatchRule.find_by_id(params[:rule])
+        @identifier = params[:identifier]
+      end
+      format.html do
+        flash[:error] = 'Unsupported request!'
+        redirect_to dashboard_path
+      end
+    end
+  end
+
+  def apply_filter_rule
+    respond_to do |format|
+      format.js do
+        @rule = PayloadMatchRule.find_by_id(params[:rule_id])
+        @identifier = params[:identifier]
+        @value = params[:value]
+      end
+      format.html do
+        flash[:error] = 'Unsupported request!'
+        redirect_to dashboard_path
+      end
+    end
+  end
+
+  def remove_filter_rule
+    respond_to do |format|
+      format.js do
+        @rule_ident = params[:rule_ident]
+      end
+      format.html do
+        flash[:error] = 'Unsupported request!'
+        redirect_to dashboard_path
+      end
+    end
+  end
+
+  def add_filter
+    respond_to do |format|
+      format.js do
+        @match_rules = PayloadMatchRule.order(:name).all
+      end
+      format.html do
+        flash[:error] = 'Unsupported request!'
+        redirect_to dashboard_path
+      end
+    end
+  end
+
+  def remove_filter
+    respond_to do |format|
+      format.js do
+        @ident = params[:ident]
+      end
+      format.html do
+        flash[:error] = 'Unsupported request!'
+        redirect_to dashboard_path
+      end
+    end
+  end
+
   private
 
   def save_route!(route=nil)
@@ -267,27 +334,58 @@ class RoutesController < ApplicationController
         :route_id => route.id
       )
       r_config.remove_all_account_configs
-      config[:config_id].each_with_index do |c_id, c_idx|
-        account_config = @account.account_configs_dataset.where(:id => c_id).first
-        r_config.add_account_config(
-          :account_config => account_config,
-          :position => c_idx
-        )
+      if(config)
+        config.fetch(:config_id, []).each_with_index do |c_id, c_idx|
+          account_config = @account.account_configs_dataset.where(:id => c_id).first
+          r_config.add_account_config(
+            :account_config => account_config,
+            :position => c_idx
+          )
+        end
       end
       r_config.remove_all_payload_matchers
-      config.fetch(:rule_id, {}).each do |r_idx, r_pair|
-        matcher = PayloadMatcher.find_or_create(
-          :payload_match_rule_id => r_pair.keys.first,
-          :account_id => @account.id,
-          :value => r_pair.values.first
-        )
-        r_config.add_payload_matcher(matcher)
+      if(config)
+        config.fetch(:rule_id, {}).each do |r_idx, r_pair|
+          matcher = PayloadMatcher.find_or_create(
+            :payload_match_rule_id => r_pair.keys.first,
+            :account_id => @account.id,
+            :value => r_pair.values.first
+          )
+          r_config.add_payload_matcher(matcher)
+        end
       end
       r_config.id
     end
     deleted_configs = route.route_configs.map(&:id) - r_config_ids
     unless(deleted_configs.empty?)
       RouteConfig.where(:id => deleted_configs).destroy
+    end
+    t_idx = 0
+    r_filter_ids = params.fetch('filters', {}).map do |ident, filter|
+      t_idx = t_idx.next
+      r_filter = RoutePayloadFilter.find_or_create(
+        :name => filter[:name],
+        :description => filter[:description],
+        :route_id => route.id
+      )
+      if(filter)
+        current_matchers = filter.payload_matchers.dup
+        filter.fetch(:rule_id, {}).each do |r_idx, r_pair|
+          matcher = PayloadMatcher.find_or_create(
+            :payload_match_rule_id => r_pair.keys.first,
+            :account_id => @account.id,
+            :value => r_pair.values.first
+          )
+          if(current_matchers.include?(matcher))
+            current_matchers.delete(matcher)
+          else
+            r_filter.add_payload_matcher(matcher)
+          end
+        end
+        current_matchers.each do |stale_matcher|
+          r_filter.remove_payload_matcher(stale_matcher)
+        end
+      end
     end
   end
 

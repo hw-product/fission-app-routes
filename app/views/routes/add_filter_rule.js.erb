@@ -1,13 +1,13 @@
 <%=
   create_window(
-    :name => 'config_rule',
+    :name => 'filter_rule',
     :title => @rule.name,
     :content => render(
       :partial => 'rule_form',
       :locals => {
         :rule => @rule,
         :identifier => @identifier,
-        :form_url => apply_config_rule_routes_path
+        :form_url => apply_filter_rule_routes_path
       }
     ),
     :auto_open => true

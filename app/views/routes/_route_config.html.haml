@@ -2,23 +2,28 @@
 - config = nil unless defined?(config)
 - configs = [] unless defined?(configs)
 
+- content_for(:trashcan) do
+  %span.glyphicon.glyphicon-trash
+
+- trash_can = yield(:trashcan)
+
 .panel.panel-default.route-config{:config_identifier => suffix, :id => suffix}
   .panel-heading
     = config ? "Configuration: #{config.name}" : 'New Configuration'
     .pull-right
       %a.btn.btn-default.btn-xs{:href => "##{suffix}-body", 'aria-expanded' => false, 'data-toggle' => 'collapse', 'aria-controls' => "#{suffix}-body"}
         %span.glyphicon.glyphicon-pencil
-      %a.btn.btn-danger.btn-xs{:href => remove_config_routes_path(:ident => suffix), 'data-remote' => true}
-        %span.glyphicon.glyphicon-trash
+      = link_to(trash_can, remove_config_routes_path(:ident => suffix), :remote => true, :method => :delete, :class => 'btn btn-danger btn-xs')
+
   .panel-body.collapse{:id => "#{suffix}-body"}
     .form-group
-      %label.control-label{:for => 'name'}
+      %label.control-label{:for => "#{suffix}-name"}
         Name
-      %input.form-control{:type => 'text', :name => 'name', :value => config ? config.name : nil, :disabled => !!config, :id => "#{suffix}-name", :autofocus => 'autofocus'}
+      %input.form-control{:type => 'text', :name => "#{suffix}-name", :value => config ? config.name : nil, :disabled => !!config, :id => "#{suffix}-name", :autofocus => 'autofocus'}
     .form-group
-      %label.control-label{:for => 'description'}
+      %label.control-label{:for => "#{suffix}-description"}
         Description
-      %input.form-control{:type => 'text', :name => 'description', :value => config ? config.description : nil, :id => "#{suffix}-description"}
+      %input.form-control{:type => 'text', :name => "#{suffix}-description", :value => config ? config.description : nil, :id => "#{suffix}-description"}
     .col-md-6.pull-left
       .panel.panel-default
         .panel-heading
@@ -49,7 +54,7 @@
           %table.table.table-striped{:id => "rules-#{suffix}"}
             - if config && config.payload_matchers
               - config.payload_matchers.each do |match|
-                = render :partial => 'rule', :locals => {:rule => match.payload_match_rule, :value => match.value}
+                = render :partial => 'rule', :locals => {:rule => match.payload_match_rule, :value => match.value, :removal_link_method => :remove_config_rule_routes_path, :rule_type => 'config'}
           .dropdown.pull-right
             %button.btn.btn-primary{:id => 'drop', :type => 'button', 'data-toggle' => 'dropdown', 'aria-haspopup' => true, 'aria-expanded' => false}
               Add Match

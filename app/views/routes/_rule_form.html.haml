@@ -2,7 +2,7 @@
   %div.panel-body
     - if rule.description
       %div.well.well-sm= rule.description
-    = bootstrap_form_tag :url => apply_config_rule_routes_path, :remote => true do |f|
+    = bootstrap_form_tag :url => form_url, :remote => true do |f|
       = f.text_field :value
       = f.hidden_field :rule_id, :value => rule.id
       = f.hidden_field :identifier, :value => identifier

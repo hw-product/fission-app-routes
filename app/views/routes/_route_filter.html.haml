@@ -1,0 +1,44 @@
+- suffix = SecureRandom.uuid if suffix.nil?
+- config = nil unless defined?(config)
+- configs = [] unless defined?(configs)
+
+- content_for(:trashcan) do
+  %span.glyphicon.glyphicon-trash
+
+- trash_can = yield(:trashcan)
+
+.panel.panel-default.route-filter{:config_identifier => suffix, :id => suffix}
+  .panel-heading
+    = config ? "Filter: #{filter.name}" : 'New Filter'
+    .pull-right
+      %a.btn.btn-default.btn-xs{:href => "##{suffix}-body", 'aria-expanded' => false, 'data-toggle' => 'collapse', 'aria-controls' => "#{suffix}-body"}
+        %span.glyphicon.glyphicon-pencil
+      = link_to(trash_can, remove_filter_routes_path(:ident => suffix), :remote => true, :method => :delete, :class => 'btn btn-danger btn-xs')
+
+  .panel-body.collapse{:id => "#{suffix}-body"}
+    .form-group
+      %label.control-label{:for => "#{suffix}-name"}
+        Name
+      %input.form-control{:type => 'text', :name => "#{suffix}-name", :value => filter ? filter.name : nil, :disabled => !!filter, :id => "#{suffix}-name", :autofocus => 'autofocus'}
+    .form-group
+      %label.control-label{:for => "#{suffix}-description"}
+        Description
+      %input.form-control{:type => 'text', :name => "#{suffix}-description", :value => filter ? filter.description : nil, :id => "#{suffix}-description"}
+    .col-md-6
+      .panel.panel-default{:id => SecureRandom.uuid}
+        .panel-heading
+          Payload Filter Matchers
+        .panel-body
+          %table.table.table-striped{:id => "rules-#{suffix}"}
+            - if filter
+              - filter.payload_matchers.each do |match|
+                = render :partial => 'rule', :locals => {:rule => match.payload_match_rule, :value => match.value, :removal_link_method => :remove_filter_rule_routes_path, :rule_type => 'filter'}
+          .dropdown.pull-right
+            %button.btn.btn-primary{:id => 'drop', :type => 'button', 'data-toggle' => 'dropdown', 'aria-haspopup' => true, 'aria-expanded' => false}
+              Add Match
+              %span.caret
+            %ul.dropdown-menu{:role => 'menu', 'aria-labelledby' => 'drop'}
+              - rules.each do |rule|
+                %li= link_to rule.name, add_filter_rule_routes_path(:rule => rule.id, :identifier => suffix), :remote => true
+
+    .clearfix
