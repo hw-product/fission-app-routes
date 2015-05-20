@@ -2,16 +2,17 @@ class DefaultRouteDashboardCell < DashboardCell
 
   def show(args)
     super
-    route = args[:route]
     dataset = Job.dataset_with(
       :scalars => {
-        :status => ['status']
+        :status => ['status'],
+        :route_name => ['data', 'router', 'action']
       }
     ).where(
       :id => Job.current_dataset_ids,
-      :account_id => current_user.run_state.current_account.id
+      :account_id => current_user.run_state.current_account.id,
+      :route_name => args[:route].name
     ).where{
-      created_at < 7.days.ago
+      created_at >= 7.days.ago
     }
     @jobs_summary = {
       :in_progress => dataset.where(:status => 'active').count,
