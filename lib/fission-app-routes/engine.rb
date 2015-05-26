@@ -69,7 +69,6 @@ module FissionApp
         c_b[:new_route_when_no_routes] = lambda do |*_|
           if(!isolated_product? && !current_user.run_state.plans.empty? && @account.routes_dataset.count == 0)
             redirect_to new_route_path
-            return false
           end
         end
         c_b[:send_to_product_dashboard] = lambda do |*_|
