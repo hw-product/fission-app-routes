@@ -102,7 +102,16 @@ module FissionApp
             end
           end
         end
-        c_b = Rails.application.config.settings.set(:callbacks, :after, 'account/billing', :order, c_b)
+        Rails.application.config.settings.set(:callbacks, :after, 'account/billing', :order, c_b)
+
+        c_b = Rails.application.config.settings.fetch(:callbacks, :before, :routes, :dashboard, Smash.new)
+        c_b[:add_repositories_if_none] = lambda do |*_|
+          pipeline = @account.routes_dataset.where(:id => session[:route_id]).first
+          if(pipeline && pipeline.repositories_dataset.count < 1)
+            redirect_to pipeline_repositories_path(:pipeline_name => pipeline.name)
+          end
+        end
+        Rails.application.config.settings.set(:callbacks, :before, :routes, :dashboard, c_b)
 
         product = Fission::Data::Models::Product.find_or_create(:name => 'Routes')
         feature = Fission::Data::Models::ProductFeature.find_or_create(
