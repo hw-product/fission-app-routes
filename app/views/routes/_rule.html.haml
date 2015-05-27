@@ -2,8 +2,9 @@
 - rule = @rule unless rule
 - value = @value unless value
 
-- content_for(:trashcan) do
-  %span.glyphicon.glyphicon-trash
+- unless(content_for?(:trashcan))
+  - content_for(:trashcan) do
+    %span.glyphicon.glyphicon-trash
 
 - trash_can = yield(:trashcan)
 
