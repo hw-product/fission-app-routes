@@ -111,7 +111,7 @@ class RoutesController < ApplicationController
       if(params[:id].to_i == 0)
         flash[:success] = 'Pipeline has been unset!'
       else
-        flash[:error] = 'Failed to locate requested route'
+        flash[:error] = 'Failed to locate requested pipeline'
       end
     end
     respond_to do |format|
@@ -146,7 +146,7 @@ class RoutesController < ApplicationController
       end
       format.html do
         save_route!
-        flash[:success] = 'Created new route!'
+        flash[:success] = 'Created new pipeline!'
         redirect_to routes_path
       end
     end
@@ -161,7 +161,7 @@ class RoutesController < ApplicationController
       format.html do
         @route = @account.routes_dataset.where(:id => params[:id]).first
         unless(@route)
-          flash[:error] = 'Failed to locate requested route'
+          flash[:error] = 'Failed to locate requested pipeline'
           redirect_to routes_path
         else
           @services = @account.product_features.map(&:services).flatten.uniq.sort_by(&:name) - (@route.services || [])
@@ -188,10 +188,10 @@ class RoutesController < ApplicationController
             route.save
           end
           save_route!(route)
-          flash[:success] = 'Updated route!'
+          flash[:success] = 'Updated pipeline!'
           redirect_to routes_path
         else
-          flash[:error] = 'Failed to locate requested route!'
+          flash[:error] = 'Failed to locate requested pipeline!'
           redirect_to routes_path
         end
       end
@@ -203,17 +203,18 @@ class RoutesController < ApplicationController
       format.js do
         route = @account.routes_dataset.where(:id => params[:id]).first
         if(route)
+          name = route.name
           route.destroy
-          flash[:success] = 'Route has been destroyed!'
+          flash[:success] = "Pipeline has been destroyed! (#{name}"
         else
-          flash[:error] = 'Failed to located requested route'
+          flash[:error] = 'Failed to located requested pipeline'
         end
         javascript_redirect_to routes_path
       end
       format.html do
         @route = @account.routes_dataset.where(:id => params[:id]).first
         unless(@route)
-          flash[:error] = 'Failed to locate requested route'
+          flash[:error] = 'Failed to locate requested pipeline'
           redirect_to routes_path
         end
         name = @route.name
