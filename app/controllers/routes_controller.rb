@@ -216,8 +216,9 @@ class RoutesController < ApplicationController
           flash[:error] = 'Failed to locate requested route'
           redirect_to routes_path
         end
+        name = @route.name
         @route.destroy
-        flash[:success] = 'Route has been destroyed!'
+        flash[:success] = "Pipeline has been destroyed! (#{name})"
         redirect_to routes_path
       end
     end

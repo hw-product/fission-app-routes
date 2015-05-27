@@ -2,7 +2,14 @@
   %span.glyphicon.glyphicon-trash
 - content_for(:heading_title) do
   = "Edit Custom Route - #{@route.name}"
-  = link_to(yield(:delete), route_path(@route.id), :class => 'btn btn-xs btn-danger pull-right', :method => :delete, :remote => true)
+  :ruby
+    link_opts = Smash.new(
+      'window-rails-ajax' => 'delete',
+      'window-rails-url' => route_path(@route.id),
+      'window-rails-confirm' => "Delete pipeline: #{@route.name.humanize}?",
+      :class => 'btn btn-xs btn-danger pull-right window-rails'
+    )
+  = link_to(yield(:delete), '#', link_opts)
   .clearfix
 
 :ruby
