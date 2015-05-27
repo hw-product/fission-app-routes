@@ -99,6 +99,19 @@ module FissionApp
                   :position => idx
                 )
               end
+              @plan.product.service_group.service_group_payload_filters.each do |filter|
+                r_filter = RoutePayloadFilter.create(
+                  :name => filter.name,
+                  :description => filter.description,
+                  :route_id => route.id
+                )
+                filter.payload_matchers.each do |matcher|
+                  new_matcher = PayloadMatcher.create(
+                    matcher.attributes.merge(:account_id => @account.id)
+                  )
+                  r_filter.add_payload_matcher(new_matcher)
+                end
+              end
             end
           end
         end
@@ -108,6 +121,7 @@ module FissionApp
         c_b[:add_repositories_if_none] = lambda do |*_|
           pipeline = @account.routes_dataset.where(:id => session[:route_id]).first
           if(pipeline && pipeline.repositories_dataset.count < 1)
+            flash[:warning] = 'Looks like no repositories are enabled on this pipeline. Enable them here!'
             redirect_to pipeline_repositories_path(:pipeline_name => pipeline.name)
           end
         end
