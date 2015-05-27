@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   resources :routes do
     collection do
+      get :prebuilt
+      post :apply_prebuilt
       get :add_config
       delete :remove_config
       get :add_config_rule
