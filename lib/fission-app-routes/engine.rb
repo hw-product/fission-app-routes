@@ -17,7 +17,7 @@ module FissionApp
               pipes[route.name.humanize] = Rails.application.routes.url_helpers.route_path(route.id)
             end
             pipes['break'] = nil
-            pipes['New'] = Rails.application.routes.url_helpers.new_route_path
+            pipes['New'] = Rails.application.routes.url_helpers.prebuilt_routes_path
           end
           if(@pipeline || isolated_product?)
             if(@pipeline)
@@ -68,7 +68,7 @@ module FissionApp
         # and account does not have any routes defined
         c_b[:new_route_when_no_routes] = lambda do |*_|
           if(!isolated_product? && !current_user.run_state.plans.empty? && @account.routes_dataset.count == 0)
-            redirect_to new_route_path
+            redirect_to prebuilt_routes_path
           end
         end
         c_b[:send_to_product_dashboard] = lambda do |*_|
@@ -100,13 +100,13 @@ module FissionApp
                 )
               end
               @plan.product.service_group.service_group_payload_filters.each do |filter|
-                r_filter = Fission::Data::Models::RoutePayloadFilter.create(
+                r_filter = Fission::Data::Models::RoutePayloadFilter.find_or_create(
                   :name => filter.name,
                   :description => filter.description,
                   :route_id => route.id
                 )
                 filter.payload_matchers.each do |matcher|
-                  new_matcher = Fission::Data::Models::PayloadMatcher.create(
+                  new_matcher = Fission::Data::Models::PayloadMatcher.find_or_create(
                     :value => matcher.value,
                     :payload_match_rule_id => matcher.payload_match_rule_id,
                     :account_id => @account.id
