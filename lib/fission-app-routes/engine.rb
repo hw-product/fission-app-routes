@@ -100,14 +100,16 @@ module FissionApp
                 )
               end
               @plan.product.service_group.service_group_payload_filters.each do |filter|
-                r_filter = RoutePayloadFilter.create(
+                r_filter = Fission::Data::Models::RoutePayloadFilter.create(
                   :name => filter.name,
                   :description => filter.description,
                   :route_id => route.id
                 )
                 filter.payload_matchers.each do |matcher|
-                  new_matcher = PayloadMatcher.create(
-                    matcher.attributes.merge(:account_id => @account.id)
+                  new_matcher = Fission::Data::Models::PayloadMatcher.create(
+                    :value => matcher.value,
+                    :payload_match_rule_id => matcher.payload_match_rule_id,
+                    :account_id => @account.id
                   )
                   r_filter.add_payload_matcher(new_matcher)
                 end
