@@ -50,7 +50,7 @@ class RoutesController < ApplicationController
             @account.services.include?(srv)
           end
         end.detect do |sg|
-          sg.id = params[:service_group_id].to_i
+          sg.id == params[:service_group_id].to_i
         end
         if(group)
           route = Route.create(
