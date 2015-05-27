@@ -22,6 +22,73 @@ class RoutesController < ApplicationController
     end
   end
 
+  def prebuilt
+    respond_to do |format|
+      format.js do
+        flash[:error] = 'Unsupported request!'
+        javascript_redirect_to pipeline_dashboard_path
+      end
+      format.html do
+        @groups = ServiceGroup.all.find_all do |sg|
+          sg.services.all? do |srv|
+            @account.services.include?(srv)
+          end
+        end.sort_by(&:generated_cost).push(nil)
+      end
+    end
+  end
+
+  def apply_prebuilt
+    respond_to do |format|
+      format.js do
+        flash[:error] = 'Unsupported request!'
+        javascript_redirect_to pipeline_dashboard_path
+      end
+      format.html do
+        group = ServiceGroup.all.find_all do |sg|
+          sg.services.all? do |srv|
+            @account.services.include?(srv)
+          end
+        end.detect do |sg|
+          sg.id = params[:service_group_id].to_i
+        end
+        if(group)
+          route = Route.create(
+            :name => group.name,
+            :account_id => @account.id,
+            :description => group.description
+          )
+          group.services.each_with_index do |srv, idx|
+            route.add_service(
+              :service => srv,
+              :position => idx
+            )
+          end
+          group.service_group_payload_filters.each do |filter|
+            r_filter = Fission::Data::Models::RoutePayloadFilter.find_or_create(
+              :name => filter.name,
+              :description => filter.description,
+              :route_id => route.id
+            )
+            filter.payload_matchers.each do |matcher|
+              new_matcher = Fission::Data::Models::PayloadMatcher.find_or_create(
+                :value => matcher.value,
+                :payload_match_rule_id => matcher.payload_match_rule_id,
+                :account_id => @account.id
+              )
+              r_filter.add_payload_matcher(new_matcher)
+            end
+          end
+          flash[:success] = 'New pipeline successfully created!'
+          redirect_to pipeline_dashboard_path(:pipeline_name => route.name)
+        else
+          flash[:error] = 'Failed to locate requested pipeline for setup!'
+          redirect_to prebuilt_routes_path
+        end
+      end
+    end
+  end
+
   def index
     respond_to do |format|
       format.js do

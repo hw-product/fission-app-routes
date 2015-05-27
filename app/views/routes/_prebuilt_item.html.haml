@@ -1,0 +1,17 @@
+%p.lead.route-summary= group.description
+.route-services.panel.panel-info
+  .panel-heading
+    Services
+  %ul.list-group
+    - group.services.each do |srv|
+      %li.list-group-item{'data-container' => 'body', 'data-toggle' => 'popover', 'data-placement' => 'right', 'title' => srv.name.humanize, 'data-content' => srv.description, 'role' => 'button'}= srv.name
+.row
+  .col-md-4
+  .col-md-4
+    .panel.panel-success
+      .panel-body.bg-success
+        .route-price
+          %center
+            %b
+              = "#{number_to_currency(group.generated_cost, :precision => 0, :locale => :en)}/mo"
+  .col-md-4

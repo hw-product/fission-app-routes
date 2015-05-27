@@ -1,0 +1,49 @@
+- content_for(:container) do
+  - @groups.each_slice(3) do |groups|
+    .row
+      - groups.each do |group|
+        - if group
+          - content_for("heading-#{group.id}") do
+            %h3= group.name
+          - content_for("footer-#{group.id}") do
+            .center-block{:style => 'text-align:center'}
+              - if false # this needs to be check if route exists
+              - else
+                = link_to('Enable!', apply_prebuilt_routes_path(:service_group_id => group.id), :class => 'btn btn-success', :method => :post)
+          %div{:class => "col-md-#{12 / groups.size}"}
+            :ruby
+              locals = {
+                :id => "group-#{group.id}",
+                :heading => yield("heading-#{group.id}"),
+                :footer => yield("footer-#{group.id}"),
+                :panel_class => 'route-prebuilt',
+                :panel_content => render(
+                  :partial => 'prebuilt_item',
+                  :locals => {
+                    :group => group
+                  }
+                )
+              }
+            = render(:partial => 'layouts/panel', :locals => locals)
+        - else
+          %div{:class => "col-md-#{12 / groups.size}"}
+            .panel.panel-default
+              .panel-heading
+                %h3
+                  Create Your Own!
+              .panel-body
+                %p.lead
+                  Build your own pipeline!
+              .panel-footer
+                %center
+                  = link_to('Create!', new_route_path, :class => 'btn btn-success')
+
+
+= render(:partial => 'layouts/container')
+
+:javascript
+  $(document).ready(
+    function(){
+      $('.route-services [data-toggle="popover"]').popover({trigger: 'hover'});
+    }
+  );
