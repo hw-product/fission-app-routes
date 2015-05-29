@@ -205,7 +205,7 @@ class RoutesController < ApplicationController
         if(route)
           name = route.name
           route.destroy
-          flash[:success] = "Pipeline has been destroyed! (#{name}"
+          flash[:success] = "Pipeline has been destroyed! (#{name})"
         else
           flash[:error] = 'Failed to located requested pipeline'
         end
