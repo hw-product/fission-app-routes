@@ -15,32 +15,34 @@
       %td= link_to(job.payload.fetch(:data, :github, :head_commit, :id, 'Unknown'), job.payload.fetch(:data, :github, :head_commit, :url, '#'))
       %td= link_to(job.status, pipeline_job_path(job.message_id))
 :javascript
-  #{
-    graph_generate(
-      dom_id,
-      :size => {
-        :height => 100
-      },
-      :line => {
-        :label => {
-          :show => false
-        }
-      },
-      :data => {
-        :type => 'donut',
-        :columns => @jobs_summary.map{|k,v|
-          [k, v]
+  $(document).ready(function(){
+    #{
+      graph_generate(
+        dom_id,
+        :size => {
+          :height => 100
         },
-        :names => Hash[
-          @jobs_summary.keys.map{|k|
-            [k.to_s, k.to_s.humanize]
+        :line => {
+          :label => {
+            :show => false
           }
-        ],
-        :colors => {
-          'complete' => 'green',
-          'error' => 'red',
-          'in_progress' => 'gray'
+        },
+        :data => {
+          :type => 'donut',
+          :columns => @jobs_summary.map{|k,v|
+            [k, v]
+          },
+          :names => Hash[
+            @jobs_summary.keys.map{|k|
+              [k.to_s, k.to_s.humanize]
+            }
+          ],
+          :colors => {
+            'complete' => 'green',
+            'error' => 'red',
+            'in_progress' => 'gray'
+          }
         }
-      }
-    )
-  }
+      )
+    }
+  });
