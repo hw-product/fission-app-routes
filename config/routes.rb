@@ -1,8 +1,6 @@
 Rails.application.routes.draw do
   resources :routes do
     collection do
-      get :prebuilt
-      post :apply_prebuilt
       get :add_config
       delete :remove_config
       get :add_config_rule
@@ -15,6 +13,9 @@ Rails.application.routes.draw do
       delete :remove_filter_rule
     end
   end
+
+  get 'pipeline/prebuilt', :to => 'routes#prebuilt', :as => :prebuilt_routes
+  post 'pipeline/prebuilder', :to => 'routes#apply_prebuilt', :as => :apply_prebuilt_routes
 
   get 'pipeline/:pipeline_name/dashboard', :as => 'pipeline_dashboard', :to => 'routes#dashboard'
 
