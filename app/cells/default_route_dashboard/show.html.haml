@@ -1,5 +1,6 @@
+- dom_id = SecureRandom.uuid
 %h4 Last 7 days: #{@jobs_summary.values.sum} jobs total
-%div#nellie_jobs_summary_graph
+%div{:id => dom_id}
 %h4 Latest
 %table.table
   %thead
@@ -16,7 +17,7 @@
 :javascript
   #{
     graph_generate(
-      'nellie_jobs_summary_graph',
+      dom_id,
       :size => {
         :height => 100
       },
