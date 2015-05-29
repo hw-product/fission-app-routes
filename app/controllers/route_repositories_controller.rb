@@ -29,4 +29,8 @@ class RouteRepositoriesController < RepositoriesController
     )
   end
 
+  def hook_identifier
+    "fission_#{@account.id}_#{@base.name}"
+  end
+
 end
