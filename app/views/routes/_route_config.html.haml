@@ -44,7 +44,7 @@
                 Available Packs
               .panel-body
                 %ul.list-group.bg-danger{:id => "available-configs-#{suffix}", :style => 'list-style-type: none; min-height: 20px', :class => suffix}
-                  - configs.each do |config|
+                  - (configs - config ? config.account_configs : []).each do |config|
                     %li.list-group-item{:config_id => config.id, :style => 'background-color: inherit'}= config.name
     .col-md-6
       .panel.panel-default{:id => SecureRandom.uuid}
