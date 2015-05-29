@@ -1,0 +1,22 @@
+:ruby
+  id = 'edit-payload-match-rule'
+  content_for(:container) do
+    render(
+      :partial => 'layouts/panel',
+      :locals => {
+        :id => id,
+        :heading => "Edit Payload Match Rule: #{@rule.name}",
+        :panel_content => render(
+          :partial => 'form',
+          :locals => {
+            :form_opts => {
+              :url => admin_payload_match_rule_path(@rule.id),
+              :method => :put
+            }
+          }
+        )
+      }
+    )
+  end
+
+= render(:partial => 'layouts/container', :locals => {:container_class => "#{id}-form", :container_id => id})

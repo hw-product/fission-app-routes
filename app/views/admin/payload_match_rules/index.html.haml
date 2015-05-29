@@ -1,0 +1,26 @@
+- content_for(:heading_title) do
+  = link_to('Create', new_admin_payload_match_rule_path, :class => 'btn btn-success btn-sm pull-right')
+  .clearfix
+
+:ruby
+  id = 'payload-match-rule'
+  content_for(:container) do
+    render(
+      :partial => 'layouts/panel',
+      :locals => {
+        :id => id,
+        :heading => ('Payload Matching Rules' + yield(:heading_title)).html_safe,
+        :panel_content => render(
+          :partial => 'layouts/table',
+          :locals => {
+            :header_data => ['Matching Rules'],
+            :data => @rules.map{|rule|
+              [link_to(rule.name, edit_admin_payload_match_rule_path(rule.id))]
+            }
+          }
+        )
+      }
+    )
+  end
+
+= render(:partial => 'layouts/container', :locals => {:container_class => "#{id}-list", :container_id => id})
