@@ -2,18 +2,13 @@
 - config = nil unless defined?(config)
 - configs = [] unless defined?(configs)
 
-- content_for(:trashcan) do
-  %span.glyphicon.glyphicon-trash
-
-- trash_can = yield(:trashcan)
-
 .panel.panel-default.route-config{:config_identifier => suffix, :id => suffix}
   .panel-heading
     = config ? "Configuration: #{config.name}" : 'New Configuration'
     .pull-right
       %a.btn.btn-default.btn-xs{:href => "##{suffix}-body", 'aria-expanded' => false, 'data-toggle' => 'collapse', 'aria-controls' => "#{suffix}-body"}
-        %span.glyphicon.glyphicon-pencil
-      = link_to(trash_can, remove_config_routes_path(:ident => suffix), :remote => true, :method => :delete, :class => 'btn btn-danger btn-xs')
+        = yield(:edit_icon)
+      = link_to(yield(:delete_icon), remove_config_routes_path(:ident => suffix), :remote => true, :method => :delete, :class => 'btn btn-danger btn-xs')
 
   .panel-body.collapse{:id => "#{suffix}-body"}
     .form-group

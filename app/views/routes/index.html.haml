@@ -2,8 +2,6 @@
   = "Custom Routes for: #{@account.name}"
   = link_to('Create', new_route_path, :class => 'btn btn-sm btn-success pull-right')
   .clearfix
-- content_for(:delete) do
-  %span.glyphicon.glyphicon-trash
 
 :ruby
   id = 'custom-routes'
@@ -21,11 +19,11 @@
               [
                 link_to(route.name, edit_route_path(route.id)),
                 link_to(
-                  yield(:delete),
+                  yield(:delete_icon),
                   route_path(route.id),
                   :remote => true,
                   :method => :delete,
-                  :class => 'btn btn-xs btn-danger pull-right'
+                  :class => 'pull-right'
                 )
               ]
             }

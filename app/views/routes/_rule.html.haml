@@ -2,14 +2,8 @@
 - rule = @rule unless rule
 - value = @value unless value
 
-- unless(content_for?(:trashcan))
-  - content_for(:trashcan) do
-    %span.glyphicon.glyphicon-trash
-
-- trash_can = yield(:trashcan)
-
 %tr{:class => "#{rule_type}-rule", :id => rule_ident, :rule_id => rule.id, :rule_value => value}
   %td
     %b= rule.name
   %td= value
-  %td= link_to(trash_can, send(removal_link_method, :rule_ident => rule_ident), :remote => true, :method => :delete, :class => 'btn btn-danger btn-xs')
+  %td= link_to(yield(:delete_icon), send(removal_link_method, :rule_ident => rule_ident), :remote => true, :method => :delete)
