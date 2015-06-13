@@ -16,33 +16,35 @@
       %td= link_to(job.status, pipeline_job_path(job.message_id))
 :javascript
   $(document).ready(function(){
-    #{
-      graph_generate(
-        dom_id,
-        :size => {
-          :height => 100
-        },
-        :line => {
-          :label => {
-            :show => false
-          }
-        },
-        :data => {
-          :type => 'donut',
-          :columns => @jobs_summary.map{|k,v|
-            [k, v]
+    setTimeout(function(){
+      #{
+        graph_generate(
+          dom_id,
+          :size => {
+            :height => 100
           },
-          :names => Hash[
-            @jobs_summary.keys.map{|k|
-              [k.to_s, k.to_s.humanize]
+          :line => {
+            :label => {
+              :show => false
             }
-          ],
-          :colors => {
-            'complete' => 'green',
-            'error' => 'red',
-            'in_progress' => 'gray'
+          },
+          :data => {
+            :type => 'donut',
+            :columns => @jobs_summary.map{|k,v|
+              [k, v]
+            },
+            :names => Hash[
+              @jobs_summary.keys.map{|k|
+                [k.to_s, k.to_s.humanize]
+              }
+            ],
+            :colors => {
+              'complete' => 'green',
+              'error' => 'red',
+              'in_progress' => 'gray'
+            }
           }
-        }
-      )
-    }
+        )
+      }
+    }, 100);
   });
