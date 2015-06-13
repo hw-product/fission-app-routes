@@ -1,3 +1,6 @@
+# v0.1.6
+* Include graph generation setup delay
+
 # v0.1.4
 * Fix graph displays
 * Add prebuilt route support
