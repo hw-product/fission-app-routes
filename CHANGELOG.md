@@ -1,3 +1,6 @@
+# v0.1.8
+* Force set account and route when specific job is provided
+
 # v0.1.6
 * Include graph generation setup delay
 
