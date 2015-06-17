@@ -1,3 +1,6 @@
+# v0.1.10
+* Fetch last job to include account id
+
 # v0.1.8
 * Force set account and route when specific job is provided
 
