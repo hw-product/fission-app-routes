@@ -1,3 +1,7 @@
+# v0.1.12
+* Always generate alpha prefixed string for graph DOM ID
+* If job instance available, auto set route
+
 # v0.1.10
 * Fetch last job to include account id
 
