@@ -12,6 +12,10 @@ class RouteJobsController < JobsController
       end
     elsif(session[:route_id])
       @route = @account.routes_dataset.where(:id => session[:route_id]).first
+    elsif(@preload_job)
+      @route = @account.routes_dataset.where(
+        :name => @preload_job.payload.get(:data, :router, :action)
+      ).first
     end
     unless(@route)
       raise 'No pipeline currently selected!'
@@ -23,12 +27,12 @@ class RouteJobsController < JobsController
 
   def set_job_account
     if(params[:job_id])
-      job = Job.where(:message_id => params[:job_id]).last
-      if(job.account_id && job.account_id != @account.id)
+      @preload_job = Job.where(:message_id => params[:job_id]).last
+      if(@preload_job.account_id && @preload_job.account_id != @account.id)
         redirect_to pipeline_job_path(
           :job_id => params[:job_id],
-          :account_id => job.account.id,
-          :pipeline_name => job.payload.get(:data, :router, :action)
+          :account_id => @preload_job.account.id,
+          :pipeline_name => @preload_job.payload.get(:data, :router, :action)
         )
       end
     end
