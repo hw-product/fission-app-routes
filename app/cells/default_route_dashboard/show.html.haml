@@ -1,4 +1,4 @@
-- dom_id = SecureRandom.uuid
+- dom_id = "G#{SecureRandom.uuid}"
 %h4 Last 7 days: #{@jobs_summary.values.sum} jobs total
 %div{:id => dom_id}
 %h4 Latest
@@ -16,35 +16,33 @@
       %td= link_to(job.status, pipeline_job_path(job.message_id))
 :javascript
   $(document).ready(function(){
-    setTimeout(function(){
-      #{
-        graph_generate(
-          dom_id,
-          :size => {
-            :height => 100
-          },
-          :line => {
-            :label => {
-              :show => false
-            }
-          },
-          :data => {
-            :type => 'donut',
-            :columns => @jobs_summary.map{|k,v|
-              [k, v]
-            },
-            :names => Hash[
-              @jobs_summary.keys.map{|k|
-                [k.to_s, k.to_s.humanize]
-              }
-            ],
-            :colors => {
-              'complete' => 'green',
-              'error' => 'red',
-              'in_progress' => 'gray'
-            }
+    #{
+      graph_generate(
+        dom_id,
+        :size => {
+          :height => 100
+        },
+        :line => {
+          :label => {
+            :show => false
           }
-        )
-      }
-    }, 100);
+        },
+        :data => {
+          :type => 'donut',
+          :columns => @jobs_summary.map{|k,v|
+            [k, v]
+          },
+          :names => Hash[
+            @jobs_summary.keys.map{|k|
+              [k.to_s, k.to_s.humanize]
+            }
+          ],
+          :colors => {
+            'complete' => 'green',
+            'error' => 'red',
+            'in_progress' => 'gray'
+          }
+        }
+      )
+    }
   });
