@@ -1,3 +1,6 @@
+# v0.1.14
+* Slice git SHA to reduce busting table constraints
+
 # v0.1.12
 * Always generate alpha prefixed string for graph DOM ID
 * If job instance available, auto set route
