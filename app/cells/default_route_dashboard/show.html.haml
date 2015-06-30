@@ -12,7 +12,7 @@
   - @recent.each do |job|
     %tr{:colspan => 5}
       %td= link_to(job.payload.fetch(:data, :github, :repository, :name, 'Unknown'), job.payload.fetch(:data, :github, :repository, :url, '#'))
-      %td= link_to(job.payload.fetch(:data, :github, :head_commit, :id, 'Unknown'), job.payload.fetch(:data, :github, :head_commit, :url, '#'))
+      %td= link_to(job.payload.fetch(:data, :github, :head_commit, :id, 'Unknown').slice(0, 7), job.payload.fetch(:data, :github, :head_commit, :url, '#'))
       %td= link_to(job.status, pipeline_job_path(job.message_id))
 :javascript
   $(document).ready(function(){
