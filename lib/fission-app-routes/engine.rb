@@ -73,6 +73,46 @@ module FissionApp
             end
           end
         end
+        # When in product isolation mode and the account has the
+        # product features required automatically create the custom route
+        c_b[:allowed_route_autocreate] = lambda do |*_|
+          if(isolated_product? && !@plan && @product.service_group && @account.routes_dataset.where(:name => @product.internal_name).count == 0)
+            group = @product.service_group
+            if(group.services.all?{|srv| @account.services.include?(srv)})
+              route = Route.create(
+                :name => group.name,
+                :account_id => @account.id,
+                :description => group.description
+              )
+              group.services.each_with_index do |srv, idx|
+                route.add_service(
+                  :service => srv,
+                  :position => idx
+                )
+              end
+              group.service_group_payload_filters.each do |filter|
+                r_filter = Fission::Data::Models::RoutePayloadFilter.find_or_create(
+                  :name => filter.name,
+                  :description => filter.description,
+                  :route_id => route.id
+                )
+                filter.payload_matchers.each do |matcher|
+                  new_matcher = Fission::Data::Models::PayloadMatcher.find_or_create(
+                    :value => matcher.value,
+                    :payload_match_rule_id => matcher.payload_match_rule_id,
+                    :account_id => @account.id
+                  )
+                  r_filter.add_payload_matcher(new_matcher)
+                end
+              end
+              flash[:success] = "New #{@product.name} pipeline successfully generated!"
+            else
+              flash[:error] = 'Insufficient privileges to generate defined pipeline'
+            end
+          end
+        end
+        # When in product isolation mode the user should never end up
+        # at the root dashboard. This forces them to the isolated dashboard
         c_b[:send_to_product_dashboard] = lambda do |*_|
           if(isolated_product? && session[:route_id].to_i == 0)
             session[:route_id] = @account.routes_dataset.where(:name => @product.internal_name).first.try(:id) || 0
@@ -85,8 +125,8 @@ module FissionApp
         Rails.application.config.settings.set(:callbacks, :before, :dashboard, :summary, c_b)
 
         c_b = Rails.application.config.settings.fetch(:callbacks, :after, 'account/billing', :order, Smash.new)
-        # Auto create custom route when plan is attached to service
-        # group'ed product
+        # Auto create custom route after ordering plan when ordered
+        # plan is attached to a service group that is linked to a product
         c_b[:plan_route_autocreation] = lambda do |*_|
           if(isolated_product? && @plan && @plan.product && @plan.product.service_group)
             unless(@account.routes_dataset.where(:name => @plan.product.internal_name).count > 0)
@@ -122,6 +162,9 @@ module FissionApp
         Rails.application.config.settings.set(:callbacks, :after, 'account/billing', :order, c_b)
 
         c_b = Rails.application.config.settings.fetch(:callbacks, :before, :routes, :dashboard, Smash.new)
+        # When a route has no repositories registered to it force the
+        # user to the repositories listing to add repos instead of
+        # loading an empty dashboard
         c_b[:add_repositories_if_none] = lambda do |*_|
           pipeline = @account.routes_dataset.where(:id => session[:route_id]).first
           if(pipeline && pipeline.repositories_dataset.count < 1)
