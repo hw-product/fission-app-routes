@@ -1,3 +1,6 @@
+# v0.1.18
+* Update views
+
 # v0.1.16
 * Support auto route generation without plan requirement
 
