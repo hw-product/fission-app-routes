@@ -1,3 +1,6 @@
+# v0.1.16
+* Support auto route generation without plan requirement
+
 # v0.1.14
 * Slice git SHA to reduce busting table constraints
 
