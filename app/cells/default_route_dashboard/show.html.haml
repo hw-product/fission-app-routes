@@ -2,18 +2,21 @@
 %h4 Last 7 days: #{@jobs_summary.values.sum} jobs total
 %div{:id => dom_id}
 %h4 Latest
-%table.table
+%table.table.table-hover
   %thead
     %tr
       %th Repository
       %th SHA
       %th Status
+      %th Last Updated
   %tbody
   - @recent.each do |job|
-    %tr{:colspan => 5}
-      %td= link_to(job.payload.fetch(:data, :github, :repository, :name, 'Unknown'), job.payload.fetch(:data, :github, :repository, :url, '#'))
-      %td= link_to(job.payload.fetch(:data, :github, :head_commit, :id, 'Unknown').slice(0, 7), job.payload.fetch(:data, :github, :head_commit, :url, '#'))
-      %td= link_to(job.status, pipeline_job_path(job.message_id))
+    %tr.linked{ :colspan => 5, :class => (job.status == :error ? 'danger' : ''), :href => pipeline_job_path(job.message_id)}
+      %td= job.payload.fetch(:data, :github, :repository, :name, 'Unknown')
+      %td= job.payload.fetch(:data, :github, :head_commit, :id, 'Unknown').slice(0, 7)
+      %td= job.status
+      %td
+        %span{ "title" => "#{job.created_at.strftime('%Y/%m/%d %H:%M:%S')}" }=(time_ago_in_words(job.created_at) + ' ago')
 :javascript
   $(document).ready(function(){
     #{
