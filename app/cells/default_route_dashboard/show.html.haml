@@ -8,7 +8,7 @@
       %th Repository
       %th SHA
       %th Status
-      %th Created
+      %th Last Updated
   %tbody
   - @recent.each do |job|
     %tr.linked{ :colspan => 5, :class => (job.status == :error ? 'danger' : ''), :href => pipeline_job_path(job.message_id)}
