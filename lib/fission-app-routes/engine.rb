@@ -106,8 +106,12 @@ module FissionApp
                 end
               end
               flash[:success] = "New #{@product.name} pipeline successfully generated!"
+              redirect_to pipeline_dashboard_path(:pipeline_name => pipeline.name)
             else
               flash[:error] = 'Insufficient privileges to generate defined pipeline'
+              if(ipp = Rails.application.config.settings.get(:routes, :insufficient_privileges_path))
+                redirect_to send(ipp)
+              end
             end
           end
         end
