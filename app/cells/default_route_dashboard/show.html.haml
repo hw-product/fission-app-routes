@@ -1,12 +1,9 @@
 - dom_id = "G#{SecureRandom.uuid}"
-%h4 Last 7 days: #{@jobs_summary.values.sum} jobs total
-%div{:id => dom_id}
-%h4 Latest
 %table.table.table-hover
   %thead
     %tr
       %th Repository
-      %th SHA
+      %th Commit
       %th Status
       %th Last Updated
   %tbody
