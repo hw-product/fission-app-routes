@@ -1,3 +1,7 @@
+# v0.1.20
+* Styling and view updates
+* Fix redirect on pipeline create
+
 # v0.1.18
 * Update views
 
