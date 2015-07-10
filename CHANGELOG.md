@@ -1,3 +1,7 @@
+# v0.1.22
+* Only render graph on summary if data is available
+* Always show last five jobs (remove time constraint on lookup)
+
 # v0.1.20
 * Styling and view updates
 * Fix redirect on pipeline create
