@@ -1,3 +1,6 @@
+# v0.1.24
+* Add status routing for jobs
+
 # v0.1.22
 * Only render graph on summary if data is available
 * Always show last five jobs (remove time constraint on lookup)
