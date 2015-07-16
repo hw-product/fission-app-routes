@@ -34,5 +34,5 @@ Rails.application.routes.draw do
   # Job display
   get 'pipeline(/:pipeline_name)/jobs(/:payload_filter/:payload_value)', :to => 'route_jobs#all', :as => 'pipeline_jobs'
   get 'pipeline/job/:job_id', :to => 'route_jobs#details', :as => 'pipeline_job'
-
+  get 'pipeline/job/:job_id/status', :to => 'route_jobs#job_status', :as => 'pipeline_job_status'
 end
