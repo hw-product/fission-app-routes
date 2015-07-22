@@ -1,3 +1,6 @@
+# v0.1.26
+* [fix] Provide full namespace to route model in custom callback
+
 # v0.1.24
 * Add status routing for jobs
 
