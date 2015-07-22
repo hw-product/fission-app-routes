@@ -79,7 +79,7 @@ module FissionApp
           if(isolated_product? && !@plan && @product.service_group && @account.routes_dataset.where(:name => @product.internal_name).count == 0)
             group = @product.service_group
             if(group.services.all?{|srv| @account.services.include?(srv)})
-              route = Route.create(
+              route = Fission::Data::Models::Route.create(
                 :name => group.name,
                 :account_id => @account.id,
                 :description => group.description
