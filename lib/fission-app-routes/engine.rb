@@ -178,7 +178,8 @@ module FissionApp
         end
         Rails.application.config.settings.set(:callbacks, :before, :routes, :dashboard, c_b)
 
-        product = Fission::Data::Models::Product.find_or_create(:name => 'Routes')
+        FissionApp.init_product(:fission)
+        product = FissionApp.init_product(:routes)
         feature = Fission::Data::Models::ProductFeature.find_or_create(
           :name => 'Editor',
           :product_id => product.id
