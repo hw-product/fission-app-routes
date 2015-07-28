@@ -4,11 +4,11 @@ class RouteJobsController < JobsController
 
   def set_valid_jobs
     @product = Product.find_by_internal_name('routes')
-    if(params[:pipeline_name])
-      @route = @account.routes_dataset.where(:name => params[:pipeline_name]).first
+    if(params[:pipeline_name] && @pipeline.try(:name) != params[:pipeline_name])
+      @route = @pipeline = @account.routes_dataset.where(:name => params[:pipeline_name]).first
       if(@route)
         session[:route_id] = @route.id
-        flash[:info] = "Loaded pipeline: #{@pipeline.name.humanize}"
+        flash[:info] = "Loaded pipeline: #{@route.name.humanize}"
       end
     elsif(session[:route_id])
       @route = @account.routes_dataset.where(:id => session[:route_id]).first
@@ -28,7 +28,7 @@ class RouteJobsController < JobsController
   def set_job_account
     if(params[:job_id])
       @preload_job = Job.where(:message_id => params[:job_id]).last
-      if(@preload_job.account_id && @preload_job.account_id != @account.id)
+      if(@preload_job && @preload_job.account_id && @preload_job.account_id != @account.id)
         redirect_to pipeline_job_path(
           :job_id => params[:job_id],
           :account_id => @preload_job.account.id,
