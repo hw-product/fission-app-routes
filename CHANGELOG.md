@@ -1,3 +1,8 @@
+# v0.1.28
+* Use product init helpers on startup
+* Only perform jobs route lookup when required (removes persisting flash)
+* Update navigation name for Repositories to Sources
+
 # v0.1.26
 * [fix] Provide full namespace to route model in custom callback
 
