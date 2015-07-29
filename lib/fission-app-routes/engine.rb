@@ -27,7 +27,7 @@ module FissionApp
                 end
                 _nav['Dashboard'] = pipeline_dashboard_path(:pipeline_name => @pipeline.name)
                 _nav['Manage'] = edit_route_path(@pipeline.id)
-                _nav['Repositories'] = pipeline_repositories_path(:pipeline_name => @pipeline.name)
+                _nav['Sources'] = pipeline_repositories_path(:pipeline_name => @pipeline.name)
                 _nav['Jobs'] = pipeline_jobs_path(:pipeline_name => @pipeline.name)
               end
             else
