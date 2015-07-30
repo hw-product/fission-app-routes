@@ -1,3 +1,7 @@
+# v0.1.30
+* [fix] Properly auto-update account on job detail loading
+* [fix] Resolve route edit issues with configuration setup
+
 # v0.1.28
 * Use product init helpers on startup
 * Only perform jobs route lookup when required (removes persisting flash)
