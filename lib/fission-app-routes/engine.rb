@@ -43,9 +43,11 @@ module FissionApp
       end
 
       def self.included(klass)
-        klass.class_eval do
-          alias_method :non_route_set_navigation, :set_navigation
-          alias_method :set_navigation, :route_set_navigation
+        unless(klass.instance_methods.map(&:to_sym).include?(:non_route_set_navigation))
+          klass.class_eval do
+            alias_method :non_route_set_navigation, :set_navigation
+            alias_method :set_navigation, :route_set_navigation
+          end
         end
       end
 
