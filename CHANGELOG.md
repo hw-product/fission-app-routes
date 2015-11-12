@@ -1,3 +1,6 @@
+# v0.1.32
+* [fix] Check for method alias prior to applying
+
 # v0.1.30
 * [fix] Properly auto-update account on job detail loading
 * [fix] Resolve route edit issues with configuration setup
