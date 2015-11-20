@@ -5,7 +5,10 @@
     = filter ? "Filter: #{filter.name}" : 'New Filter'
     .pull-right
       = link_to(yield(:edit_icon), "##{suffix}-body", 'aria-expanded' => false, 'data-toggle' => 'collapse', 'aria-controls' => "#{suffix}-body")
-      = link_to(yield(:delete_icon), remove_filter_routes_path(:ident => suffix), :remote => true, :method => :delete)
+      - if filter
+        = link_to(yield(:delete_icon), '#', :class => 'window-rails', 'window-rails-ajax' => 'delete', 'window-rails-confirm' => "Delete #{filter.name} filter?", 'window-rails-title' => 'Remove Filter', 'window-rails-url' => remove_filter_routes_path(:ident => suffix))
+      - else
+        = link_to(yield(:delete_icon), remove_filter_routes_path(:ident => suffix), :method => :delete, :remote => true)
 
   .panel-body.collapse{:id => "#{suffix}-body"}
     .form-group

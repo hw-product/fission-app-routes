@@ -4,10 +4,13 @@
 
 .panel.panel-default.route-config{:config_identifier => suffix, :id => suffix}
   .panel-heading
-    = config ? "Configuration: #{config.name}" : 'New Configuration'
+    = config ? "Configurator: #{config.name}" : 'New Configuration'
     .pull-right
       = link_to(yield(:edit_icon), "##{suffix}-body", 'aria-expanded' => false, 'data-toggle' => 'collapse', 'aria-controls' => "#{suffix}-body")
-      = link_to(yield(:delete_icon), remove_config_routes_path(:ident => suffix), :remote => true, :method => :delete)
+      - if config
+        = link_to(yield(:delete_icon), '#', :class => 'window-rails', 'window-rails-ajax' => 'delete', 'window-rails-confirm' => "Delete #{config.name} configurator?", 'window-rails-title' => 'Remove Configurator', 'window-rails-url' => remove_config_routes_path(:ident => suffix))
+      - else
+        = link_to(yield(:delete_icon), remove_config_routes_path(:ident => suffix), :method => :delete, :remote => true)
 
   .panel-body.collapse{:id => "#{suffix}-body"}
     .form-group
@@ -64,5 +67,7 @@
       $("#route-configs-#{suffix}, #available-configs-#{suffix}").sortable({
         connectWith: ".#{suffix}"
       }).disableSelection();
+      $('.route-config .panel-heading').hover(function(){ $(this).css('cursor', 'move'); }, function(){ $(this).css('cursor', 'auto'); });
+      window_rails.init();
     }
   );
