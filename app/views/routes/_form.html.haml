@@ -54,7 +54,7 @@
     - if @route
       - @route.route_configs.each do |r_config|
         = render :partial => 'route_config', :locals => {:config => r_config, :rules => @match_rules, :configs => @configs}
-    = link_to 'Add Config', add_config_routes_path, :class => 'btn btn-primary pull-right', :role => 'button', :remote => true, :id => 'config-adder'
+    = link_to 'Add Configurator', add_config_routes_path, :class => 'btn btn-primary pull-right', :role => 'button', :remote => true, :id => 'config-adder'
 
   .clearfix
   %br
