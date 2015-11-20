@@ -4,9 +4,8 @@
   .panel-heading
     = filter ? "Filter: #{filter.name}" : 'New Filter'
     .pull-right
-      %a.btn.btn-default.btn-xs{:href => "##{suffix}-body", 'aria-expanded' => false, 'data-toggle' => 'collapse', 'aria-controls' => "#{suffix}-body"}
-        = yield(:edit_icon)
-      = link_to(yield(:delete_icon), remove_filter_routes_path(:ident => suffix), :remote => true, :method => :delete, :class => 'btn btn-danger btn-xs')
+      = link_to(yield(:edit_icon), "##{suffix}-body", 'aria-expanded' => false, 'data-toggle' => 'collapse', 'aria-controls' => "#{suffix}-body")
+      = link_to(yield(:delete_icon), remove_filter_routes_path(:ident => suffix), :remote => true, :method => :delete)
 
   .panel-body.collapse{:id => "#{suffix}-body"}
     .form-group

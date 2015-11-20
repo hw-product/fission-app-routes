@@ -5,7 +5,7 @@
       'window-rails-ajax' => 'delete',
       'window-rails-url' => route_path(@route.id),
       'window-rails-confirm' => "Delete pipeline: #{@route.name.humanize}?",
-      :class => 'btn btn-xs btn-danger pull-right window-rails'
+      :class => 'pull-right window-rails'
     )
   = link_to(yield(:delete_icon), '#', link_opts)
   .clearfix
