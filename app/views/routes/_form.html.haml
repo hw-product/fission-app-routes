@@ -14,7 +14,9 @@
               - if @route && @route.route_list
                 - @route.route_list.each do |item|
                   - if item.is_a?(Fission::Data::Models::Service)
-                    %li.list-group-item.service{:item_type => 'service', :item_id => item.id, :style => 'background-color: #fcf8ec'}= item.name
+                    %li.list-group-item.service{:item_type => 'service', :item_id => item.id, :style => 'background-color: #fcf8ec'}
+                      = item.display_name.humanize
+                      %i.fa.fa-question-circle.pull-right{'data-toggle' => 'tooltip', 'title' => item.description, 'data-placement' => 'right'}
                   - elsif item.is_a?(Fission::Data::Models::ServiceGroup)
                     %li.list-group-item.bg-info.service-group{:item_type => 'service-group', :item_id => item.id, :style => 'background-color: #d9edf7'}= item.name
                   - elsif item.is_a?(Fission::Data::Models::CustomService)
@@ -26,7 +28,10 @@
           .panel-body
             %ul.list-group.bg-warning.services-connector.service#all-services{:style => 'list-style-type: none; min-height: 20px'}
               - @services.each do |service|
-                %li.list-group-item.service{:item_type => 'service', :item_id => service.id, :style => 'background-color: #fcf8ec'}= service.name
+                %li.list-group-item.service{:item_type => 'service', :item_id => service.id, :style => 'background-color: #fcf8ec'}
+                  = service.display_name.humanize
+                  %i.fa.fa-question-circle.pull-right{'data-toggle' => 'tooltip', 'title' => service.description, 'data-placement' => 'right'}
+
       .col-md-3.service-group-available-list
         .panel.panel-info
           .panel-heading
@@ -67,6 +72,7 @@
 :javascript
   $(document).ready(
     function(){
+      $('[data-toggle="tooltip"]').tooltip();
       $("#route-items, #all-services, #all-service-groups, #all-custom-services").sortable({
         connectWith: ".services-connector",
         receive: function(event, ui){
