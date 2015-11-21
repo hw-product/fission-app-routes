@@ -1,3 +1,6 @@
+# v0.1.34
+* UI cleanup
+
 # v0.1.32
 * [fix] Check for method alias prior to applying
 
