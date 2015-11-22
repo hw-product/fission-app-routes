@@ -6,10 +6,9 @@ class DefaultRouteDashboardCell < DashboardCell
       :scalars => {
         :status => ['status'],
         :route_name => ['data', 'router', 'action']
-      }
+      },
+      :account_id => current_user.run_state.current_account.id
     ).where(
-      :id => Job.current_dataset_ids,
-      :account_id => current_user.run_state.current_account.id,
       :route_name => args[:route].name
     )
     #   .where{
