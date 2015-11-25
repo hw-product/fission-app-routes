@@ -175,25 +175,23 @@ class RoutesController < ApplicationController
   end
 
   def update
+    route = @account.routes_dataset.where(:id => params[:id]).first
+    if(route)
+      if(route.description != params[:description])
+        route.description = params[:description]
+        route.save
+      end
+      save_route!(route)
+      flash[:success] = 'Updated pipeline!'
+    else
+      flash[:error] = 'Failed to locate requested pipeline!'
+    end
     respond_to do |format|
       format.js do
-        flash[:error] = 'Unsupported request!'
-        javascript_redirect_to dashboard_path
+        javascript_redirect_to routes_path
       end
       format.html do
-        route = @account.routes_dataset.where(:id => params[:id]).first
-        if(route)
-          if(route.description != params[:description])
-            route.description = params[:description]
-            route.save
-          end
-          save_route!(route)
-          flash[:success] = 'Updated pipeline!'
-          redirect_to routes_path
-        else
-          flash[:error] = 'Failed to locate requested pipeline!'
-          redirect_to routes_path
-        end
+        redirect_to routes_path
       end
     end
   end
@@ -356,9 +354,162 @@ class RoutesController < ApplicationController
     end
   end
 
-  private
+  def add_service
+    respond_to do |format|
+      format.js do
+        params[:data] = params[:data].values.flatten.compact
+        @items = Smash.new
+        @items['Service'] = @account.product_features.map(&:services).flatten.uniq.sort_by(&:name).find_all do |item|
+          params[:data].any? do |x|
+            x['type'] == item.class.to_s.split('::').last && x['id'] == item.id.to_s
+          end
+        end
+        @items['ServiceGroup'] = @account.product_features.map(&:service_groups).flatten.uniq.sort_by(&:name).find_all do |item|
+          params[:data].any? do |x|
+            x['type'] == item.class.to_s.split('::').last && x['id'] == item.id.to_s
+          end
+        end
+        @items['CustomService'] = @account.custom_services_dataset.order(:name).all.find_all do |item|
+          params[:data].any? do |x|
+            x['type'] == item.class.to_s.split('::').last && x['id'] == item.id.to_s
+          end
+        end
+        @route_items = params[:data].map do |item|
+          @items[item['type']].detect{|x| x.id.to_s == item['id']}
+        end
+      end
+      format.html do
+        flash[:error] = 'Unsupported request!'
+        redirect_to dashboard_path
+      end
+    end
+  end
+
+  def add_service_list
+    respond_to do |format|
+      format.js do
+        params[:data] ||= {}
+        @services = @account.product_features.map(&:services).flatten.uniq.sort_by(&:name).find_all do |item|
+          !params[:data].fetch('Service', []).include?(item.id.to_s)
+        end
+        @service_groups = @account.product_features.map(&:service_groups).flatten.uniq.sort_by(&:name).find_all do |item|
+          !params[:data].fetch('ServiceGroup', []).include?(item.id.to_s)
+        end
+        @custom_services = @account.custom_services_dataset.order(:name).all.find_all do |item|
+          !params[:data].fetch('CustomService', []).include?(item.id.to_s)
+        end
+      end
+      format.html do
+        flash[:error] = 'Unsupported request!'
+        redirect_to dashboard_path
+      end
+    end
+  end
+
+  def add_configurator
+    respond_to do |format|
+      format.js do
+
+      end
+      format.html do
+        flash[:error] = 'Unsupported request'
+        redirect_to routes_path
+      end
+    end
+  end
+
+  def edit_configurator
+    respond_to do |format|
+      format.js do
+        @name = params[:configurator]
+        @description = params[:data][@name][:description]
+        @configs = @account.account_configs_dataset.order(:name).all
+        @set_rules = params[:data][@name].fetch('matchers', {})
+        @rules = Hash[
+          PayloadMatchRule.order(:name).all.map do |rule|
+            [rule, @set_rules[rule.id.to_s]]
+          end
+        ]
+        @set_configs = params[:data][@name].fetch(:configs, []).map do |c_id|
+          @configs.detect{|config| config.id.to_s == c_id}
+        end
+      end
+      format.html do
+        flash[:error] = 'Unsupported request!'
+        redirect_to dashboard_path
+      end
+    end
+  end
+
+  def preview_configurator
+    respond_to do |format|
+      format.js do
+        unless(params.fetch(:pack_ids, []).empty?)
+          configs = @account.account_configs_dataset.where(:id => params[:pack_ids]).all
+          configs = params[:pack_ids].map do |c_id|
+            configs.detect{|c| c.id.to_s == c_id}
+          end
+          @configuration = Smash.new
+          configs.reverse.map do |item|
+            @configuration.deep_merge!(item.data)
+          end
+        else
+          @configuration = {}
+        end
+        @configuration = JSON.pretty_generate(@configuration.to_hash)
+      end
+      format.html do
+        flash[:error] = 'Unsupported request!'
+        redirect_to routes_path
+      end
+    end
+  end
+
+  protected
+
+  def save_reformat!
+    if(params[:route_items])
+      params[:service] = params[:route_items].map do |pos, data|
+        [pos, data['id']] if data['type'] == 'Service'
+      end.compact
+      params['service-group'] = params[:route_items].map do |pos, data|
+        [pos, data['id']] if data['type'] == 'ServiceGroup'
+      end.compact
+      params['custom-service'] = params[:route_items].map do |pos, data|
+        [pos, data['id']] if data['type'] == 'CustomService'
+      end.compact
+    end
+    if(params[:configurators])
+      params[:configs] = Smash[
+        params[:configurators].map do |c_name, c_info|
+          [c_name, Smash.new(
+              :name => c_name,
+              :description => c_info[:description],
+              :config_id => c_info[:configs],
+              :rule_id => Smash[c_info[:matchers].map{|k,v| [k, {k => v}]}]
+          )]
+        end
+      ]
+      params[:filters] = Smash[
+        params[:configurators].map do |c_name, c_info|
+          unless(c_info[:matchers].empty?)
+            [c_name, Smash.new(
+                :name => c_name,
+                :description => c_info[:description],
+                :rule_id => Smash[
+                  c_info[:matchers].map do |k,v|
+                    [k, {k => v}]
+                  end
+                ]
+            )]
+          end
+        end.compact
+      ]
+    end
+  end
 
   def save_route!(route=nil)
+    save_reformat!
     unless(route)
       route = Route.find_or_create(
         :name => Bogo::Utility.snake(params[:name]).tr(' ', '_'),

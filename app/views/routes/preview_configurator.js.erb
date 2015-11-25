@@ -1,0 +1,11 @@
+$('.configurator-preview').popover({
+  content: "<pre><%= j(@configuration.html_safe) %></pre>",
+  html: true,
+  placement: 'right',
+  title: 'Merged Configuration',
+  trigger: 'focus'
+});
+$('.configurator-preview').popover('show');
+$('.configurator-preview').on('hidden.bs.popover', function(){
+  $(this).popover('destroy');
+});

@@ -1,0 +1,15 @@
+<%=
+  create_window(
+    :name => 'service_add',
+    :title => 'Add new route item',
+    :size => 'normal',
+    :content => render(
+      :partial => 'service_list',
+      :locals => {
+        :services => @services,
+        :service_groups => @service_groups,
+        :custom_services => @custom_services
+      }
+    )
+  )
+%>

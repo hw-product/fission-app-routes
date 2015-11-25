@@ -1,0 +1,48 @@
+.panel.panel-default#route-builder
+  .panel-heading
+    Route
+  .panel-content
+    .col-md-3.pull-left.route-items
+      .panel.panel-success
+        .panel-heading
+          Route Items
+        .panel-content
+          %ul.list-group.bg-success.services-connector.service.custom-service.service-group#route-items{:style => 'list-style-type: none; min-height: 20px'}
+            - if @route && @route.route_list
+              - @route.route_list.each do |item|
+                - if item.is_a?(Fission::Data::Models::Service)
+                  %li.list-group-item.service{:item_type => 'service', :item_id => item.id, :style => 'background-color: #fcf8ec'}
+                    = item.display_name.humanize
+                    %i.fa.fa-question-circle.pull-right{'data-toggle' => 'tooltip', 'title' => item.description, 'data-placement' => 'right'}
+                - elsif item.is_a?(Fission::Data::Models::ServiceGroup)
+                  %li.list-group-item.bg-info.service-group{:item_type => 'service-group', :item_id => item.id, :style => 'background-color: #d9edf7'}= item.name
+                - elsif item.is_a?(Fission::Data::Models::CustomService)
+                  %li.list-group-item.bg-danger.custom-service{:item_type => 'custom-service', :item_id => item.id, :style => 'background-color: #f2dede'}= item.name
+    .col-md-3.service-available-list
+      .panel.panel-warning
+        .panel-heading
+          Available Services
+        .panel-body
+          %ul.list-group.bg-warning.services-connector.service#all-services{:style => 'list-style-type: none; min-height: 20px'}
+            - @services.each do |service|
+              %li.list-group-item.service{:item_type => 'service', :item_id => service.id, :style => 'background-color: #fcf8ec'}
+                = service.display_name.humanize
+                %i.fa.fa-question-circle.pull-right{'data-toggle' => 'tooltip', 'title' => service.description, 'data-placement' => 'right'}
+
+    .col-md-3.service-group-available-list
+      .panel.panel-info
+        .panel-heading
+          Available Service Groups
+        .panel-body
+          %ul.list-group.bg-info.services-connector.service-group#all-service-groups{:style => 'list-style-type: none; min-height: 20px'}
+            - @service_groups.each do |service_group|
+              %li.list-group-item.bg-info.service-group{:item_type => 'service-group', :item_id => service_group.id, :style => 'background-color: #d9edf7'}= service_group.name
+    .col-md-3.custom-service-available-list
+      .panel.panel-danger
+        .panel-heading
+          Custom Services
+        .panel-content
+          %ul.list-group.bg-danger.services-connector.custom-service#all-custom-services{:style => 'list-style-type: none; min-height: 20px'}
+            - @custom_services.each do |custom_service|
+              %li.list-group-item.bg-danger.custom-service{:item_type => 'custom-service', :item_id => custom_service.id, :style => 'background-color: #f2dede'}= custom_service.name
+    .clearfix

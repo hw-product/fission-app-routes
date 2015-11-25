@@ -1,0 +1,40 @@
+.route-item-adder{:style => 'max-height: 500px; overflow: auto;'}
+  - [services, service_groups, custom_services].flatten.compact.sort_by(&:name).each do |srv|
+    :ruby
+      srv_name = srv.respond_to?(:display_name) ? srv.display_name : srv.name
+      srv_icon = srv.respond_to?(:icon) ? srv.icon || 'cog' : 'cog'
+    .panel.panel-primary.route-item-adder-panel{'data-service-name' => srv.name, 'data-service-type' => srv.class.to_s.split('::').last, 'data-service-id' => srv.id}
+      .panel-body
+        .row
+          .col-md-1
+          .col-md-4
+            .colorize.text-primary
+              %center
+                .fa.fa-4x.service-config-icon{:class => "fa-#{srv_icon}"}
+              %center
+                = srv_name.humanize
+          .col-md-1
+          .col-md-6.colorize.text-primary= srv.description
+
+:javascript
+  $('.route-item-adder-panel').click(function(){
+    window_rails.loading.open();
+    window_rails.close_window('service_add');
+    add_route_item($(this).attr('data-service-id'), $(this).attr('data-service-type'));
+  });
+  $('.route-item-adder-panel').hover(
+    function(){
+      $(this).find('.colorize').removeClass('text-primary');
+      $(this).find('.colorize').addClass('text-success');
+      $(this).removeClass('panel-primary');
+      $(this).addClass('panel-success');
+      $(this).css('cursor', 'pointer');
+    },
+    function(){
+      $(this).find('.colorize').addClass('text-primary');
+      $(this).find('.colorize').removeClass('text-success');
+      $(this).removeClass('panel-success');
+      $(this).addClass('panel-primary');
+      $(this).css('cursor', 'auto');
+    }
+  );
