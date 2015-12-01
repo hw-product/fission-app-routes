@@ -14,7 +14,6 @@
         :panel_content => render(
           :partial => 'layouts/table',
           :locals => {
-            :header_data => ["Custom Routes for: #{@account.name}"],
             :data => @routes.map{|route|
               [
                 link_to(route.name, edit_route_path(route.id)),
