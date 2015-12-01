@@ -1,3 +1,8 @@
+# v0.2.2
+* Basic editor is now enabled for create and edit
+* Remove auto account-redirect (jobs handles properly now)
+* Restrict access to route destruction in isolated product mode
+
 # v0.2.0
 * Initial release with basic configuration (edit only)
 
