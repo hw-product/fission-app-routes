@@ -131,8 +131,8 @@ class RoutesController < ApplicationController
         javascript_redirect_to dashboard_path
       end
       format.html do
-        @services = @account.product_features.map(&:services).flatten.uniq.sort_by(&:name)
-        @service_groups = @account.product_features.map(&:service_groups).flatten.uniq.sort_by(&:name)
+        @services = current_product_features.map(&:services).flatten.uniq.sort_by(&:name)
+        @service_groups = current_product_features.map(&:service_groups).flatten.uniq.sort_by(&:name)
         @custom_services = @account.custom_services_dataset.order(:name).all
       end
     end
@@ -163,8 +163,8 @@ class RoutesController < ApplicationController
           flash[:error] = 'Failed to locate requested pipeline'
           redirect_to routes_path
         else
-          @services = @account.product_features.map(&:services).flatten.uniq.sort_by(&:name) - (@route.services || [])
-          @service_groups = @account.product_features.map(&:service_groups).flatten.uniq.sort_by(&:name) - (@route.service_groups || [])
+          @services = current_product_features.map(&:services).flatten.uniq.sort_by(&:name) - (@route.services || [])
+          @service_groups = current_product_features.map(&:service_groups).flatten.uniq.sort_by(&:name) - (@route.service_groups || [])
           @custom_services = @account.custom_services_dataset.order(:name).all - (@route.custom_services || [])
           @configs = @account.account_configs_dataset.order(:name).all
           @match_rules = PayloadMatchRule.order(:name).all
@@ -196,27 +196,23 @@ class RoutesController < ApplicationController
   end
 
   def destroy
+    if(isolated_product?)
+      flash[:error] = 'Invalid request! Cannot destroy product pipeline.'
+    else
+      route = @account.routes_dataset.where(:id => params[:id]).first
+      if(route)
+        name = route.name
+        route.destroy
+        flash[:success] = "Pipeline has been destroyed! (#{name})"
+      else
+        flash[:error] = 'Failed to located requested pipeline'
+      end
+    end
     respond_to do |format|
       format.js do
-        route = @account.routes_dataset.where(:id => params[:id]).first
-        if(route)
-          name = route.name
-          route.destroy
-          flash[:success] = "Pipeline has been destroyed! (#{name})"
-        else
-          flash[:error] = 'Failed to located requested pipeline'
-        end
         javascript_redirect_to routes_path
       end
       format.html do
-        @route = @account.routes_dataset.where(:id => params[:id]).first
-        unless(@route)
-          flash[:error] = 'Failed to locate requested pipeline'
-          redirect_to routes_path
-        end
-        name = @route.name
-        @route.destroy
-        flash[:success] = "Pipeline has been destroyed! (#{name})"
         redirect_to routes_path
       end
     end
@@ -358,12 +354,12 @@ class RoutesController < ApplicationController
       format.js do
         params[:data] = params[:data].values.flatten.compact
         @items = Smash.new
-        @items['Service'] = @account.product_features.map(&:services).flatten.uniq.sort_by(&:name).find_all do |item|
+        @items['Service'] = current_product_features.map(&:services).flatten.uniq.sort_by(&:name).find_all do |item|
           params[:data].any? do |x|
             x['type'] == item.class.to_s.split('::').last && x['id'] == item.id.to_s
           end
         end
-        @items['ServiceGroup'] = @account.product_features.map(&:service_groups).flatten.uniq.sort_by(&:name).find_all do |item|
+        @items['ServiceGroup'] = current_product_features.map(&:service_groups).flatten.uniq.sort_by(&:name).find_all do |item|
           params[:data].any? do |x|
             x['type'] == item.class.to_s.split('::').last && x['id'] == item.id.to_s
           end
@@ -388,10 +384,10 @@ class RoutesController < ApplicationController
     respond_to do |format|
       format.js do
         params[:data] ||= {}
-        @services = @account.product_features.map(&:services).flatten.uniq.sort_by(&:name).find_all do |item|
+        @services = current_product_features.map(&:services).flatten.uniq.sort_by(&:name).find_all do |item|
           !params[:data].fetch('Service', []).include?(item.id.to_s)
         end
-        @service_groups = @account.product_features.map(&:service_groups).flatten.uniq.sort_by(&:name).find_all do |item|
+        @service_groups = current_product_features.map(&:service_groups).flatten.uniq.sort_by(&:name).find_all do |item|
           !params[:data].fetch('ServiceGroup', []).include?(item.id.to_s)
         end
         @custom_services = @account.custom_services_dataset.order(:name).all.find_all do |item|
@@ -516,8 +512,8 @@ class RoutesController < ApplicationController
         :account_id => @account.id
       )
     end
-    services = @account.product_features.map(&:services).flatten.uniq.sort_by(&:name)
-    service_groups = @account.product_features.map(&:service_groups).flatten.uniq.sort_by(&:name)
+    services = current_product_features.map(&:services).flatten.uniq.sort_by(&:name)
+    service_groups = current_product_features.map(&:service_groups).flatten.uniq.sort_by(&:name)
     custom_services = @account.custom_services
     route.remove_all_services
     route.remove_all_service_groups
