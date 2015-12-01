@@ -25,20 +25,4 @@ class RouteJobsController < JobsController
     @namespace = params[:namespace] = 'pipeline'
   end
 
-  # Overload account loader and force redirect if different account
-  # is required
-  def load_current_account!
-    super
-    if(params[:job_id])
-      @preload_job = Job.where(:message_id => params[:job_id]).last
-      if(@preload_job && @preload_job.account_id && @preload_job.account_id != @account.id)
-        redirect_to pipeline_job_path(
-          :job_id => params[:job_id],
-          :account_id => @preload_job.account.id,
-          :pipeline_name => @preload_job.payload.get(:data, :router, :action)
-        )
-      end
-    end
-  end
-
 end
