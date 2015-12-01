@@ -16,6 +16,11 @@ Rails.application.routes.draw do
       get :add_filter_rule
       post :apply_filter_rule
       delete :remove_filter_rule
+      post :add_service
+      post :add_service_list
+      post :edit_configurator
+      post :add_configurator
+      post :preview_configurator
     end
   end
 

@@ -1,0 +1,6 @@
+<%
+content = render(:partial => 'route_builder_basic', :locals => {:route_items => @route_items})
+%>
+$('#route-builder').replaceWith('<%= escape_javascript(content) %>');
+window_rails.loading.close();
+route_sort_setup();

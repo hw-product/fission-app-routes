@@ -1,0 +1,18 @@
+<%=
+  create_window(
+    :name => 'configurator_edit',
+    :title => "Edit configurator: #{@name}",
+    :size => 'normal',
+    :content => render(
+      :partial => 'route_config_basic',
+      :locals => {
+        :name => @name,
+        :description => @description,
+        :configs => @configs,
+        :set_configs => @set_configs,
+        :rules => @rules
+      }
+    )
+  )
+%>
+enable_editables();

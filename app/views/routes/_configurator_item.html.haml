@@ -1,0 +1,17 @@
+.panel.configurator-item.panel-info{'id' => "configurator-#{name}", 'data-configurator-name' => name}
+  - configs.each do |c|
+    %input{:type => 'hidden', :name => c.first, :value => c.last, :class => 'config'}
+  - matchers.each do |m|
+    %input{:type => 'hidden', :name => m.first, :value => m.last, :class => 'matcher'}
+  %input{:type => 'hidden', :name => 'description', :value => description, :class => 'description'}
+  .panel-body
+    %i.fa.fa-close.pull-right.config-item-delete
+    .row
+      .col-md-2
+      .col-md-8
+        .colorize.text-info
+          %center
+            .fa.fa-book.fa-4x
+          %center
+            = name.humanize
+      .col-md-2

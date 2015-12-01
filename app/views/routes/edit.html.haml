@@ -19,7 +19,7 @@
         :id => id,
         :heading => yield(:heading_title),
         :panel_content => render(
-          :partial => 'form',
+          :partial => 'form_basic',
           :locals => {
             :form_opts => {
               :url => route_path(@route.id),

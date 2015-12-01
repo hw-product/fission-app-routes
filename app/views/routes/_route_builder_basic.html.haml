@@ -1,0 +1,13 @@
+- width = 12 / (route_items.size > 4 ? route_items.size : 4)
+.panel.panel-default#route-builder
+  .panel-heading
+    Route
+    .pull-right.route-item-adder= yield(:create_icon)
+    .clearfix
+  .panel-body
+    .row.route-sort
+      - route_items.each do |srv|
+        :ruby
+          type = srv.class.to_s.split('::').last
+          dom_id = "route-service-#{srv.name}-#{srv.id}-#{type}"
+        .sortable.route-item{:class => "col-md-#{width}", :id => dom_id, 'data-route-type' => type, 'data-route-id' => srv.id}= render :partial => 'route_item', :locals => {:srv => srv, :container_width => width, :type => type}

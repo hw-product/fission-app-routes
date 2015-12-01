@@ -1,0 +1,94 @@
+%div{:id => "configurator-form-#{@name}"}
+  .row
+    .col-md-12
+      %label.control-label
+        Description
+      %input.form-control{:name => 'description', :value => description}
+  .row
+    .col-md-6
+      .panel.panel-info
+        .panel-heading
+          Applied Packs
+          .dropdown.pull-right
+            %button.glyphicon.glyphicon-plus.btn.btn-xs.btn-success.dropdown{:id => 'config-adds', :type => 'button', 'data-toggle' => 'dropdown', 'aria-haspopup' => true, 'aria-expanded' => false}
+            %ul.dropdown-menu{:role => 'menu', 'aria-labelledby' => 'config-adds'}
+              - configs.each do |config|
+                %li
+                  = link_to config.name.humanize, '#', :class => "pack-adder #{set_configs.include?(config) ? 'hidden' : ''}", 'data-pack-name' => config.name
+          %button.btn.btn-xs.btn-primary.pull-right.configurator-preview{:style => 'margin-right: 5px;'}
+            %span.glyphicon.glyphicon-search
+          .clearfix
+        .panel-body
+          %ul#enabled-packs.list-group.bg-info{:style => 'list-style-type: none; min-height: 20px'}
+            - (set_configs + (configs - set_configs)).reverse.each do |config|
+              %li.list-group-item.config-pack-item{:style => 'background-color: inherit', :class => set_configs.include?(config) ? '' : 'hidden', 'data-pack-name' => config.name, 'data-pack-id' => config.id}
+                = config.name.humanize
+                .config-item-delete.pull-right
+                  %i.fa.fa-close
+                .clearfix
+    .col-md-6
+      .panel.panel-info
+        .panel-heading
+          Payload Filter Matchers
+        .panel-body
+          %table.table.table-striped.filter-rules
+            %tbody
+              - rules.each do |rule, value|
+                %tr
+                  %td
+                    %b= rule.name
+                  %td
+                    %a.editable{:id => "rule-#{rule.id}", 'data-rule-id' => rule.id, 'data-type' => 'text', 'data-name' => 'value', 'data-title' => 'Enter pattern'}=value
+  .row
+    .col-md-12
+      %button.btn.btn-success.pull-right.config-apply
+        Apply
+      .clearfix
+
+:javascript
+  $(document).ready(function(){
+    $('.pack-adder').click(function(){
+      pack_name = $(this).attr('data-pack-name');
+      $(this).addClass('hidden');
+      $('#enabled-packs li[data-pack-name="'+ pack_name +'"]').removeClass('hidden');
+      return false;
+    });
+    $('.config-item-delete').click(function(){
+      item = $(this).parents('.list-group-item');
+      pack_name = item.attr('data-pack-name');
+      item.addClass('hidden');
+      $('.pack-adder[data-pack-name="'+ pack_name +'"]').removeClass('hidden');
+    });
+    $('.configurator-preview').click(function(){
+      packs = [];
+      $('#enabled-packs li').each(function(){
+        if(!$(this).hasClass('hidden')){
+          packs.push($(this).attr('data-pack-id'));
+        }
+      });
+      $.post('#{preview_configurator_routes_path}', {
+        pack_ids: packs
+      });
+    });
+    $('#enabled-packs').sortable().disableSelection();
+    $('.config-apply').click(function(){
+      $(this).html('Applying...');
+      $(this).attr('disabled', 'disabled');
+      root_form = $('#configurator-form-#{@name}');
+      root_elm = $('#configurator-#{@name}');
+      root_elm.find('input').remove();
+      root_elm.append('<input type="hidden" class="description" name="description" value="' + root_form.find('input').val() + '" />');
+      $(root_form.find('.config-pack-item').toArray().reverse()).each(function(){
+        if(!$(this).hasClass('hidden')){
+          root_elm.append('<input type="hidden" class="config" name="' + $(this).attr('data-pack-name') + '" value="' + $(this).attr('data-pack-id') + '" />');
+        }
+      });
+      root_form.find('.filter-rules a.editable').each(function(){
+        if(!$(this).hasClass('editable-empty')){
+          root_elm.append('<input type="hidden" class="matcher" name="' + $(this).attr('data-rule-id') + '" value="' + $(this).html() + '" />');
+        }
+      });
+      sparkle_ui.display.highlight('configurator-#{@name}', 'success');
+      setTimeout(function(){ window_rails.close_window('configurator_edit'); }, 1000);
+    });
+  });
