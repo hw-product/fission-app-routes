@@ -139,14 +139,13 @@ class RoutesController < ApplicationController
   end
 
   def create
+    save_route!
+    flash[:success] = 'Created new pipeline!'
     respond_to do |format|
       format.js do
-        flash[:error] = 'Unsupported request!'
-        javascript_redirect_to dashboard_path
+        javascript_redirect_to routes_path
       end
       format.html do
-        save_route!
-        flash[:success] = 'Created new pipeline!'
         redirect_to routes_path
       end
     end
