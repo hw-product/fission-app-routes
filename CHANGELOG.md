@@ -1,3 +1,6 @@
+# v0.2.0
+* Initial release with basic configuration (edit only)
+
 # v0.1.34
 * UI cleanup
 
