@@ -1,6 +1,6 @@
 :ruby
   srv_name = srv.respond_to?(:display_name) ? srv.display_name : srv.name
-  srv_icon = srv.respond_to?(:icon) ? srv.icon || 'cog' : 'cog'
+  srv_icon = srv.respond_to?(:icon) && srv.icon.present? ? srv.icon : 'cog'
   icon_size = 4
 .panel.service-route-panel.service-route-item.panel-info{:id => "service-route-#{srv.name}-#{type}", 'data-service-name' => srv.name}
   .panel-body
