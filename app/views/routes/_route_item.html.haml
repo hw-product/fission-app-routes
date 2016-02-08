@@ -1,8 +1,7 @@
 :ruby
   srv_name = srv.respond_to?(:display_name) ? srv.display_name : srv.name
   srv_icon = srv.respond_to?(:icon) ? srv.icon || 'cog' : 'cog'
-  icon_size = container_width >= 4 ? 4 : container_width + 1
-  font_size = container_width < 3 ? '0.6em' : 'normal'
+  icon_size = 4
 .panel.service-route-panel.service-route-item.panel-info{:id => "service-route-#{srv.name}-#{type}", 'data-service-name' => srv.name}
   .panel-body
     %i.fa.fa-close.pull-right.route-item-delete{:style => 'color: darkred'}
@@ -12,6 +11,6 @@
         .colorize.text-info
           %center
             .fa.service-config-icon{:class => "fa-#{srv_icon} fa-#{icon_size}x"}
-          %center{:style => "font-size: #{font_size};"}
+          %center
             = srv_name.humanize
       .col-md-2

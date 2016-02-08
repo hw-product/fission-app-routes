@@ -2,35 +2,24 @@
   = f.text_field :name, :value => @route ? @route.name : nil, :disabled => !!@route, :autofocus => true
   = f.text_field :description, :value => @route ? @route.description : nil
 
-  = render :partial => 'route_builder_basic', :locals => {:route_items => @route ? @route.route_list : []}
+  %fieldset#route-builder
+    %legend
+      Route
+    #route-collection.route-sort
+      = render :partial => 'route_collection', :locals => {:route_items => @route ? @route.route_list : []}
 
   %fieldset#configurators
     %legend
       Configurators
-    .row
-      .col-md-3
-        .panel.configurator-item-adder.panel-success
-          .panel-body
-            .row
-              .col-md-2
-              .col-md-8
-                .colorize.text-success
-                  %center
-                    .fa.fa-plus.fa-4x
-                  %center
-                    New
-              .col-md-2
-
-      - (@route ? @route.route_configs : []).each do |r_config|
-        .col-md-3.config-item
-          = render :partial => 'configurator_item', :locals => {:name => r_config.name, :description => r_config.description, :configs => r_config.account_configs.map{|a| [a.name, a.id]}, :matchers => r_config.payload_matchers.map{|x| [x.payload_match_rule_id, x.value]}}
+    #configurators-collection.config-sort
+      = render :partial => 'configurator_collection', :locals => {:configurator_items => @route ? @route.route_configs : []}
 
   %button#route-save.btn.btn-success.pull-right
     Save
   .clearfix
 
 #config-template.hidden
-  .col-md-3.config-item
+  .col-md-3.sortable.config-item
     .panel.configurator-item.panel-info{'id' => "configurator-template", 'data-configurator-name' => 'unset'}
       %input{:type => 'hidden', :name => 'description', :value => '', :class => 'description'}
       .panel-body
@@ -61,7 +50,7 @@
   .route-item-delete{
     cursor: pointer;
   }
-  .route-item-adder-panel{
+  .route-item-adder{
     cursor: pointer;
   }
   .configurator-item{
@@ -170,7 +159,8 @@
     new_item.find('.configurator-item').attr('data-configurator-name', item_name);
     new_item.find('.configurator-item').attr('id', 'configurator-' + item_name);
     new_item.find('.configurator-item').find('.configurator-name').html(item_name);
-    $('#configurators').children('.row').last().append(new_item.html());
+    $('#configurator-adder-container').before(new_item.html());
+    route_sort_setup();
     sparkle_ui.display.highlight('configurator-' + item_name);
     setTimeout(function(){
       configurator_edit($('#configurator-' + item_name));
@@ -181,7 +171,7 @@
   function route_sort_setup(){
     $('.route-item-adder').click(route_item_adder);
     $('.route-sort').sortable({
-      items: "> div.sortable"
+      items: ".route-item"
     }).disableSelection();
 
     $('.route-item-delete, .config-item-delete').click(function(){
@@ -215,6 +205,10 @@
         add_configurator_item();
       });
     });
+
+    $('.config-sort').sortable({
+      items: ".config-item"
+    }).disableSelection();
 
   }
 
