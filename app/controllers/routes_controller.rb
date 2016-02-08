@@ -481,13 +481,13 @@ class RoutesController < ApplicationController
               :name => c_name,
               :description => c_info[:description],
               :config_id => c_info[:configs],
-              :rule_id => Smash[c_info[:matchers].map{|k,v| [k, {k => v}]}]
+              :rule_id => Smash[c_info.fetch(:matchers, {}).map{|k,v| [k, {k => v}]}]
           )]
         end
       ]
       params[:filters] = Smash[
         params[:configurators].map do |c_name, c_info|
-          unless(c_info[:matchers].empty?)
+          unless(c_info[:matchers].blank?)
             [c_name, Smash.new(
                 :name => c_name,
                 :description => c_info[:description],
@@ -550,7 +550,7 @@ class RoutesController < ApplicationController
       )
       r_config.remove_all_account_configs
       if(config)
-        config.fetch(:config_id, []).each_with_index do |c_id, c_idx|
+        (config[:config_id] || []).each_with_index do |c_id, c_idx|
           account_config = @account.account_configs_dataset.where(:id => c_id).first
           r_config.add_account_config(
             :account_config => account_config,
