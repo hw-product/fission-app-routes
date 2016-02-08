@@ -8,6 +8,19 @@
     .col-md-6
       .panel.panel-info
         .panel-heading
+          Payload Filter Matchers
+        .panel-body
+          %table.table.table-striped.filter-rules
+            %tbody
+              - rules.each do |rule, value|
+                %tr
+                  %td
+                    %b= rule.name
+                  %td
+                    %a.editable{:id => "rule-#{rule.id}", 'data-rule-id' => rule.id, 'data-type' => 'text', 'data-name' => 'value', 'data-title' => 'Enter pattern'}=value
+    .col-md-6
+      .panel.panel-info
+        .panel-heading
           Applied Packs
           .dropdown.pull-right
             %button.glyphicon.glyphicon-plus.btn.btn-xs.btn-success.dropdown{:id => 'config-adds', :type => 'button', 'data-toggle' => 'dropdown', 'aria-haspopup' => true, 'aria-expanded' => false}
@@ -26,19 +39,7 @@
                 .config-item-delete.pull-right
                   %i.fa.fa-close
                 .clearfix
-    .col-md-6
-      .panel.panel-info
-        .panel-heading
-          Payload Filter Matchers
-        .panel-body
-          %table.table.table-striped.filter-rules
-            %tbody
-              - rules.each do |rule, value|
-                %tr
-                  %td
-                    %b= rule.name
-                  %td
-                    %a.editable{:id => "rule-#{rule.id}", 'data-rule-id' => rule.id, 'data-type' => 'text', 'data-name' => 'value', 'data-title' => 'Enter pattern'}=value
+
   .row
     .col-md-12
       %button.btn.btn-success.pull-right.config-apply
