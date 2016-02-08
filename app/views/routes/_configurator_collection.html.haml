@@ -12,7 +12,6 @@
                   New
       - else
         :ruby
-          type = srv.class.to_s.split('::').last
           dom_id = "configurator-#{conf.name}-#{conf.id}"
         .sortable.config-item.col-md-3{:id => dom_id, 'configurator-id' => conf.id}
-          = render :partial => 'configurator_item', :locals => {:name => r_config.name, :description => r_config.description, :configs => r_config.account_configs.map{|a| [a.name, a.id]}, :matchers => r_config.payload_matchers.map{|x| [x.payload_match_rule_id, x.value]}}
+          = render :partial => 'configurator_item', :locals => {:name => conf.name, :description => conf.description, :configs => conf.account_configs.map{|a| [a.name, a.id]}, :matchers => conf.payload_matchers.map{|x| [x.payload_match_rule_id, x.value]}}
