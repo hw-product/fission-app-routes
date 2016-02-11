@@ -139,7 +139,8 @@ class RoutesController < ApplicationController
   end
 
   def create
-    save_route!
+    route = save_route!
+    notify!(:create, :route => route)
     flash[:success] = 'Created new pipeline!'
     respond_to do |format|
       format.js do
@@ -181,6 +182,7 @@ class RoutesController < ApplicationController
         route.save
       end
       save_route!(route)
+      notify!(:update, :route => route)
       flash[:success] = 'Updated pipeline!'
     else
       flash[:error] = 'Failed to locate requested pipeline!'
@@ -202,7 +204,9 @@ class RoutesController < ApplicationController
       route = @account.routes_dataset.where(:id => params[:id]).first
       if(route)
         name = route.name
-        route.destroy
+        notify!(:destroy, :route => route) do
+          route.destroy
+        end
         flash[:success] = "Pipeline has been destroyed! (#{name})"
       else
         flash[:error] = 'Failed to located requested pipeline'
@@ -602,6 +606,7 @@ class RoutesController < ApplicationController
         end
       end
     end
+    route
   end
 
 end
