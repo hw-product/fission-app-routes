@@ -220,15 +220,11 @@ module FissionApp
 
       # @return [Hash] account navigation
       def fission_navigation(product, current_user)
-        if(product.internal_name == 'fission')
-          Smash.new(
-            'Admin' => Smash.new(
-              'Payload Matchers' => Rails.application.routes.url_helpers.admin_payload_match_rules_path
-            )
+        Smash.new(
+          'Admin' => Smash.new(
+            'Payload Matchers' => Rails.application.routes.url_helpers.admin_payload_match_rules_path
           )
-        else
-          Smash.new
-        end
+        )
       end
 
       # @return [Smash]
