@@ -1,0 +1,24 @@
+.service-route-item{
+    cursor: move;
+}
+.route-item-delete{
+    cursor: pointer;
+}
+.route-item-adder{
+    cursor: pointer;
+}
+.configurator-item{
+    cursor: pointer;
+}
+.configurator-item-adder{
+    cursor: pointer;
+}
+.config-item-delete{
+    padding: 3px;
+    cursor: pointer;
+    color: darkred;
+}
+.config-item-delete:hover{
+    color: white;
+    background-color: darkred;
+}
