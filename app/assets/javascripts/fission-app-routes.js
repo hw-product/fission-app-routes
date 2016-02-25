@@ -1,10 +1,12 @@
-function route_edit_setup(){
+var fission_routes = {data: {}};
+
+fission_routes.route_edit_setup = function(){
   $('#route-form').submit(function(event){
     $('#route-save').html('Saving...');
     $('#route-save').attr('disabled', 'disabled');
     $.ajax({
       url: $(this).attr('action'),
-      method: '#{form_opts[:method].to_s.upcase}',
+      method: $(this).attr('method'),
       data: {
         name: $('#name').val(),
         description: $('#description').val(),
@@ -16,21 +18,21 @@ function route_edit_setup(){
   });
 }
 
-function add_route_item(item_id, item_type){
+fission_routes.add_route_item = function(item_id, item_type){
   items = gather_route_items(true);
   items.push({type: item_type, id: item_id});
-  $.post('#{add_service_routes_path}', {
+  $.post(fission_routes.data['add_service_routes_path'], {
     data: items
   });
 }
 
-function route_item_adder(){
-  $.post('#{add_service_list_routes_path}', {
+fission_routes.route_item_adder = function(){
+  $.post(fission_routes.data['add_service_list_routes_path'], {
     data: gather_route_items()
   });
 }
 
-function gather_route_items(flat){
+fission_routes.gather_route_items = function(flat){
   if(flat){
     items = [];
     $('.route-item').each(function(){
@@ -53,7 +55,7 @@ function gather_route_items(flat){
   }
 }
 
-function gather_configurator_items(){
+fission_routes.gather_configurator_items = function(){
   items = {};
   $('.configurator-item').each(function(){
     if($(this).attr('id') != 'configurator-template'){
@@ -72,14 +74,14 @@ function gather_configurator_items(){
   return items;
 }
 
-function configurator_edit(elm){
-  $.post('#{edit_configurator_routes_path}', {
+fission_routes.configurator_edit = function(elm){
+  $.post(fission_routes.data['edit_configurator_routes_path'], {
     data: gather_configurator_items(),
     configurator: elm.attr('data-configurator-name')
   });
 }
 
-function add_configurator_item(){
+fission_routes.add_configurator_item = function(){
   item_name = $('#config-namer input').val();
   window_rails.close_window('configurator-namer');
   window_rails.loading.open();
@@ -96,7 +98,7 @@ function add_configurator_item(){
   }, 1000);
 }
 
-function route_sort_setup(){
+fission_routes.route_sort_setup = function(){
   $('.route-item-adder').click(route_item_adder);
   $('.route-sort').sortable({
     items: ".route-item"
@@ -139,6 +141,3 @@ function route_sort_setup(){
   }).disableSelection();
 
 }
-
-$(document).ready(route_sort_setup);
-$(document).ready(route_edit_setup);

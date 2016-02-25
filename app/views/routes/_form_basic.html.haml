@@ -41,3 +41,12 @@
     %button.btn.btn-success.pull-right
       Create
     .clearfix
+
+:javascript
+
+  fission_routes.data['add_service_routes_path'] = '#{add_service_routes_path}';
+  fission_routes.data['add_service_list_routes_path'] = '#{add_service_list_routes_path}';
+  fission_routes.data['edit_configurator_routes_path'] = '#{edit_configurator_routes_path}';
+
+  $(document).ready(route_sort_setup);
+  $(document).ready(route_edit_setup);
