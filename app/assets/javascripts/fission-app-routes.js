@@ -90,7 +90,7 @@ fission_routes.add_configurator_item = function(){
   new_item.find('.configurator-item').attr('id', 'configurator-' + item_name);
   new_item.find('.configurator-item').find('.configurator-name').html(item_name);
   $('#configurator-adder-container').before(new_item.html());
-  route_sort_setup();
+  fission_routes.route_sort_setup();
   sparkle_ui.display.highlight('configurator-' + item_name);
   setTimeout(function(){
     configurator_edit($('#configurator-' + item_name));

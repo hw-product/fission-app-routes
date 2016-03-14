@@ -3,4 +3,4 @@ content = render(:partial => 'route_collection', :locals => {:route_items => @ro
 %>
 $('#route-collection').html('<%= escape_javascript(content) %>');
 window_rails.loading.close();
-route_sort_setup();
+fission_routes.route_sort_setup();
