@@ -10,8 +10,8 @@ fission_routes.route_edit_setup = function(){
       data: {
         name: $('#name').val(),
         description: $('#description').val(),
-        route_items: gather_route_items(true),
-        configurators: gather_configurator_items()
+        route_items: fission_routes.gather_route_items(true),
+        configurators: fission_routes.gather_configurator_items()
       }
     });
     return false;
@@ -19,7 +19,7 @@ fission_routes.route_edit_setup = function(){
 }
 
 fission_routes.add_route_item = function(item_id, item_type){
-  items = gather_route_items(true);
+  items = fission_routes.gather_route_items(true);
   items.push({type: item_type, id: item_id});
   $.post(fission_routes.data['add_service_routes_path'], {
     data: items
@@ -28,7 +28,7 @@ fission_routes.add_route_item = function(item_id, item_type){
 
 fission_routes.route_item_adder = function(){
   $.post(fission_routes.data['add_service_list_routes_path'], {
-    data: gather_route_items()
+    data: fission_routes.gather_route_items()
   });
 }
 
@@ -76,7 +76,7 @@ fission_routes.gather_configurator_items = function(){
 
 fission_routes.configurator_edit = function(elm){
   $.post(fission_routes.data['edit_configurator_routes_path'], {
-    data: gather_configurator_items(),
+    data: fission_routes.gather_configurator_items(),
     configurator: elm.attr('data-configurator-name')
   });
 }
@@ -93,13 +93,13 @@ fission_routes.add_configurator_item = function(){
   fission_routes.route_sort_setup();
   sparkle_ui.display.highlight('configurator-' + item_name);
   setTimeout(function(){
-    configurator_edit($('#configurator-' + item_name));
+    fission_routes.configurator_edit($('#configurator-' + item_name));
     window_rails.loading.close();
   }, 1000);
 }
 
 fission_routes.route_sort_setup = function(){
-  $('.route-item-adder').click(route_item_adder);
+  $('.route-item-adder').click(fission_routes.route_item_adder);
   $('.route-sort').sortable({
     items: ".route-item"
   }).disableSelection();
@@ -117,7 +117,7 @@ fission_routes.route_sort_setup = function(){
   });
 
   $('.configurator-item').click(function(){
-    configurator_edit($(this));
+    fission_routes.configurator_edit($(this));
   });
 
   $('.configurator-item-adder').click(function(){
@@ -132,7 +132,7 @@ fission_routes.route_sort_setup = function(){
     window_rails.create_window(args);
     window_rails.open_window(args['name'], args);
     $('.configurator-name-saver button').click(function(){
-      add_configurator_item();
+      fission_routes.add_configurator_item();
     });
   });
 
