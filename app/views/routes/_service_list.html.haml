@@ -20,7 +20,7 @@
   $('.route-item-adder-panel').click(function(){
     window_rails.loading.open();
     window_rails.close_window('service_add');
-    add_route_item($(this).attr('data-service-id'), $(this).attr('data-service-type'));
+    fission_routes.add_route_item($(this).attr('data-service-id'), $(this).attr('data-service-type'));
   });
   $('.route-item-adder-panel').hover(
     function(){
