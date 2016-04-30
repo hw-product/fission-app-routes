@@ -6,7 +6,7 @@ fission_routes.route_edit_setup = function(){
     $('#route-save').attr('disabled', 'disabled');
     $.ajax({
       url: $(this).attr('action'),
-      method: $(this).attr('method'),
+      method: $(this).find('input[name=_method]').attr('value') || $(this).attr('method'),
       data: {
         name: $('#name').val(),
         description: $('#description').val(),
